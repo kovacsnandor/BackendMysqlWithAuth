@@ -61,4 +61,86 @@ app.get('/cars',  (req, res) => {
 ```
 
 # Sql Injections
+- branch: 04_Sql_Injection
 [A 10 leggyakoribb támadástípus](https://owasp.org/www-project-top-ten/)
+
+## Támadások sql-ből
+```sql
+# sql injection
+# union
+SELECT * FROM cars union SELECT * FROM cars;
+SELECT * FROM cars UNION ALL SELECT * FROM cars;
+SELECT * FROM cars union SELECT *, '' FROM users;
+
+# Mi az adatbázis neve
+SELECT * FROM cars
+  WHERE id = 1 UNION SELECT database(), '', '', '';
+
+# Milyen táblák vannak
+SELECT * FROM cars
+  WHERE id = 1 union select table_name, '','', '' from information_schema.tables where table_schema='cars';
+
+# cars tábla oszlopai
+SELECT * FROM cars
+  WHERE id = 1 union select column_name, '', '', data_type from information_schema.columns where table_name='users' and table_schema='cars';
+
+# user adatok kilopása
+SELECT * FROM cars
+  WHERE id = 1 union select email, password, '','' from users;
+```
+
+## Az sql injection-el támadható kód
+- Egy sql kód akkor támadható, ha belefűzzük a sztringbe a paramétert:
+```js
+app.get("/cars/:id", (req, res) => {
+  const id = req.params.id;
+  var connection = getConnection();
+  connection.connect();
+
+  //támadható megoldás: az sql sztringbe fűzött paraméter
+  let sql = `
+    SELECT * FROM cars
+    WHERE id = ${id}`;
+
+  connection.query(sql, function (error, results, fields) {
+    if (error) {
+      console.log(error);
+      return;
+    }
+    res.send(results);
+  });
+
+  connection.end();
+});
+```
+
+## Az sql injection kivédése
+```js
+app.get("/cars/:id", (req, res) => {
+  const id = req.params.id;
+  var connection = getConnection();
+  connection.connect();
+
+  //Paraméterezett sql sztring: ?
+  let sql = `
+    SELECT * FROM cars
+    WHERE id = ?`;
+
+  connection.query(sql, [id], function (error, results, fields) {
+    if (error) {
+      console.log(error);
+      res.send({error: `sql error`})
+      return;
+    }
+    if (results.length == 0) {
+        res.send({error: `Not found id: ${id}`})
+        return
+    }
+
+    res.send(results);
+  });
+
+  connection.end();
+});
+```
+
