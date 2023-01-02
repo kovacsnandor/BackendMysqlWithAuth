@@ -49,6 +49,8 @@ SELECT * FROM cars
 # sql injection
 # union
 SELECT * FROM cars union SELECT * FROM cars;
+SELECT * FROM cars UNION ALL SELECT * FROM cars;
+SELECT * FROM cars union SELECT *, '' FROM users;
 
 # Mi az adatbázis neve
 SELECT * FROM cars

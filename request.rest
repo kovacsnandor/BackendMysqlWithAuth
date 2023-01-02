@@ -2,7 +2,7 @@
 get http://localhost:3000/cars
 
 ### get car by id
-get http://localhost:3000/cars/1
+get http://localhost:3000/cars/11
 
 ### sql inections
 ### get adabázis

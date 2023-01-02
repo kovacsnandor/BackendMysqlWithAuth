@@ -34,13 +34,19 @@ app.get("/cars/:id", (req, res) => {
 
   let sql = `
     SELECT * FROM cars
-    WHERE id = ${id}`;
+    WHERE id = ?`;
 
-  connection.query(sql, function (error, results, fields) {
+  connection.query(sql, [id], function (error, results, fields) {
     if (error) {
       console.log(error);
+      res.send({error: `sql error`})
       return;
     }
+    if (results.length == 0) {
+        res.send({error: `Not found id: ${id}`})
+        return
+    }
+
     res.send(results);
   });
 
