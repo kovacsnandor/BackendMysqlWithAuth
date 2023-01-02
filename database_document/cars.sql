@@ -68,3 +68,11 @@ SELECT * FROM cars
 SELECT * FROM cars
   WHERE id = 1 union select email, password, '','' from users;
 
+## Adatmanipulációk
+DELETE FROM cars
+  WHERE id = 3;
+
+INSERT cars 
+  (name, licenceNumber, hourlyRate)
+  VALUES
+  ('BMW', 'BB-111', 2200);

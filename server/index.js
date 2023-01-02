@@ -53,4 +53,32 @@ app.get("/cars/:id", (req, res) => {
   connection.end();
 });
 
+
+app.delete("/cars/:id", (req, res) => {
+    const id = req.params.id;
+    var connection = getConnection();
+    connection.connect();
+  
+    let sql = `
+    DELETE FROM cars
+    WHERE id = ?`;
+  
+    connection.query(sql, [id], function (error, result, fields) {
+      if (error) {
+        res.send({error: `sql error`})
+        return;
+      }
+      if (!result.affectedRows) {
+          res.send({error: `Not found id: ${id}`})
+          return
+      }
+  
+      res.send({id: id});
+    });
+  
+    connection.end();
+  });
+
+  
+
 app.listen(3000);

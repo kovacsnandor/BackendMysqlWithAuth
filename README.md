@@ -1,9 +1,9 @@
 # Adatbázis létrehozás
-- branch: 01_Adatbázis_Létrehozás
+- branch: `01_Adatbázis_Létrehozás`
 
 
 # Server létrehozás
-- branch: 02_Express_Server
+- branch: `02_Express_Server`
 
 ## Fájlok, szerkezet kialakítása
 - Server: `server/index.js`
@@ -31,7 +31,7 @@
 2. Szerver indítása: `npm run dev`
 
 # Csatlakozás az adatbázishoz
-- branch: 03_Connect_Mysql
+- branch: `03_Connect_Mysql`
 
 A mysql-npm alapján:
 ```js
@@ -61,7 +61,7 @@ app.get('/cars',  (req, res) => {
 ```
 
 # Sql Injections
-- branch: 04_Sql_Injection
+- branch: `04_Sql_Injection`
 [A 10 leggyakoribb támadástípus](https://owasp.org/www-project-top-ten/)
 
 ## Támadások sql-ből
@@ -144,3 +144,13 @@ app.get("/cars/:id", (req, res) => {
 });
 ```
 
+# 05_Mysql_Műveletek
+- branch: `05_Mysql_Műveletek`
+
+## Az sql nyelv részei
+- Data Definition Language: `DDL`
+    - pl.: `CREATE TABLE ...`
+- Data Query Language: `DQL`
+    - pl.: `SELECT * FROM cars`
+- Data Manipulation Language: `DML`
+    - pl.: `DELETE FROM cars`

