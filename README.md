@@ -59,3 +59,6 @@ app.get('/cars',  (req, res) => {
 
 })
 ```
+
+# Sql Injections
+[A 10 leggyakoribb támadástípus](https://owasp.org/www-project-top-ten/)
