@@ -113,4 +113,41 @@ app.post("/cars", bodyParser.json(), (req, res) => {
   connection.end();
 });
 
+
+app.put("/cars/:id", bodyParser.json(), (req, res) => {
+    const id = req.params.id;
+    let connection = getConnection();
+    connection.connect();
+    const updatedCar = {
+      name: req.body.name,
+      licenceNumber: req.body.licenceNumber,
+      hourlyRate: req.body.hourlyRate,
+    };
+    let sql = `
+    UPDATE cars SET
+    name = ?,
+    licenceNumber = ?,
+    hourlyRate = ?
+    WHERE id = ?
+      `;
+    connection.query(
+      sql,
+      [updatedCar.name, updatedCar.licenceNumber, updatedCar.hourlyRate, id],
+      function (error, result, fields) {
+        if (error) {
+          res.send({ error: `sql error` });
+          return;
+        }
+        if (!result.affectedRows) {
+          res.send({ error: `Insert falied` });
+          return;
+        }
+        updatedCar.id = id
+        res.send(updatedCar);
+      }
+    );
+  
+    connection.end();
+  });
+
 app.listen(3000);
