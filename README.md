@@ -115,6 +115,7 @@ app.get("/cars/:id", (req, res) => {
 ```
 
 ## Az sql injection kivédése
+- place holder karakter: ?
 ```js
 app.get("/cars/:id", (req, res) => {
   const id = req.params.id;
