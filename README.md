@@ -29,3 +29,33 @@
 ## Projekt indítása
 1. Belépés a server mappába: `cd server`
 2. Szerver indítása: `npm run dev`
+
+# Csatlakozás az adatbázishoz
+- branch: 03_Connect_Mysql
+
+A mysql-npm alapján:
+```js
+app.get('/cars',  (req, res) => {
+  var mysql      = require('mysql');
+  var connection = mysql.createConnection({
+    host     : 'localhost',
+    user     : 'root',
+    password : '',
+    database : 'cars'
+  });
+   
+  connection.connect();
+  
+  let sql = `SELECT * FROM cars`
+  connection.query(sql, function (error, results, fields) {
+    if (error) {
+        console.log(error);
+        return
+    };
+    res.send(results);
+  });
+   
+  connection.end();
+
+})
+```
