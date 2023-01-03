@@ -158,5 +158,4 @@ app.get("/cars/:id", (req, res) => {
     - pl.: `SELECT * FROM cars`
 - Data Manipulation Language: `DML`
     - pl.: `DELETE FROM cars`
-
    
