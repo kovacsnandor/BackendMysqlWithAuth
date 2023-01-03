@@ -1,6 +1,9 @@
 # Adatbázis létrehozás
 - branch: `01_Adatbázis_Létrehozás`
 
+## MySQL idegen kulcs megkötések
+![adatbázis diagram](database_document/carsDiagram.jpg)
+
 
 # Server létrehozás
 - branch: `02_Express_Server`
@@ -155,3 +158,5 @@ app.get("/cars/:id", (req, res) => {
     - pl.: `SELECT * FROM cars`
 - Data Manipulation Language: `DML`
     - pl.: `DELETE FROM cars`
+
+   

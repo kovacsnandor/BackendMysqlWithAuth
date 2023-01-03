@@ -25,6 +25,25 @@ CHARACTER SET utf8,
 COLLATE utf8_hungarian_ci;
 
 
+CREATE TABLE cars.trips (
+  id INT(11) NOT NULL AUTO_INCREMENT,
+  numberOfMinits INT(11) DEFAULT NULL,
+  date DATETIME DEFAULT NULL,
+  carId INT(11) DEFAULT NULL,
+  PRIMARY KEY (id)
+)
+ENGINE = INNODB,
+CHARACTER SET utf8,
+COLLATE utf8_hungarian_ci;
+
+ALTER TABLE cars.trips 
+  ADD INDEX IDX_trips_carId(carId);
+
+ALTER TABLE cars.trips 
+  ADD CONSTRAINT FK_trips_cars_id FOREIGN KEY (carId)
+    REFERENCES cars.cars(id);
+
+
 
 # Adatbevitel
 INSERT cars 
@@ -69,10 +88,19 @@ SELECT * FROM cars
   WHERE id = 1 union select email, password, '','' from users;
 
 ## Adatmanipulációk
+# car törlés
 DELETE FROM cars
   WHERE id = 3;
 
+# car hozzáadás
 INSERT cars 
   (name, licenceNumber, hourlyRate)
   VALUES
   ('BMW', 'BB-111', 2200);
+
+# car módosítás
+UPDATE cars SET
+  name = 'Mercedes',
+  licenceNumber = 'MM-111',
+  hourlyRate = 2200
+  WHERE id = 4;
