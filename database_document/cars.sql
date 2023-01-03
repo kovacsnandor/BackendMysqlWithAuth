@@ -44,27 +44,52 @@ ALTER TABLE cars.trips
     REFERENCES cars.cars(id);
 
 
-
+# ---------------------------------
 # Adatbevitel
+# Kézi teszt adatokkal
+DELETE FROM trips;
+DELETE FROM cars;
+DELETE FROM users;
+
 INSERT cars 
-  (name, licenceNumber, hourlyRate)
+  (id, name, licenceNumber, hourlyRate)
   VALUES
-  ('Mercedes', 'MM-111', 2000), ('Fiat', 'FF-111', 2100), ('BMW', 'BB-111', 2200);
+  (1, 'Mercedes', 'MM-111', 2000), (2, 'Fiat', 'FF-111', 2100), (3, 'BMW', 'BB-111', 2200);
+
+INSERT trips 
+  (id, numberOfMinits, date, carId)
+  VALUES
+  (1, 25, '2022.10.13 12:20:00', 1), (2, 35, '2022.10.13 13:30:00', 1), (3, 20, '2022.10.13 14:20:00', 1),
+  (4, 25, '2022.10.13 12:30:00', 2), (5, 15, '2022.10.13 13:40:00', 2),
+  (6, 30, '2022.10.13 12:10:00', 3), (7, 15, '2022.10.13 14:30:00', 3), (8, 25, '2022.10.13 15:10:00', 3);
 
 INSERT users 
-  (email, password)
+  (id, email, password)
   VALUES
-  ('jozsi@gmail.com','jozsijelszo'),('bela@gmail.com','belajelszo'),('feri@gmail.com','ferijelszo');
+  (1,'jozsi@gmail.com','jozsijelszo'),(2,'bela@gmail.com','belajelszo'),(3,'feri@gmail.com','ferijelszo');
 
 # Lekérdezések
-# get http://localhost:3000/cars
 SELECT * FROM cars;
+SELECT * FROM trips;
 SELECT * FROM users;
+
+# Tárolt eljárással
+CALL tesztAdatokKezi();
+
+# tárolt függvények teszt:
+select randomInteger(1,3);
+select randomRendszam('Mercedesz');
+select randomAuto();
+
+CALL tesztAdatokAutomata(10, '2022.10.13 12:00:00', 2, 5);
+
+# Lekérdezések
 
 # get http://localhost:3000/cars/1
 SELECT * FROM cars
   WHERE id = 1;
 
+# -------------------------------------
 # sql injection
 # union
 SELECT * FROM cars union SELECT * FROM cars;

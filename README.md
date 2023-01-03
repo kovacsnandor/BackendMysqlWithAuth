@@ -4,6 +4,17 @@
 ## MySQL idegen kulcs megkötések
 ![adatbázis diagram](database_document/carsDiagram.jpg)
 
+## Teszt adatok
+### Kézi generálás
+
+### Tárolt eljárás: tesztAdatokKezi
+
+### Tárolt eljárás: tesztAdatokAutomata
+- Linkek
+  - [random nevek](https://thecodecave.com/generating-random-names-in-mysql/)
+    - [ELT function](https://www.w3resource.com/mysql/string-functions/mysql-elt-function.php)
+  - [random integer](https://stackoverflow.com/questions/6550155/mysql-get-a-random-value-between-two-values)
+  - [for loop](https://stackoverflow.com/questions/5125096/for-loop-example-in-mysql)
 
 # Server létrehozás
 - branch: `02_Express_Server`
@@ -159,3 +170,5 @@ app.get("/cars/:id", (req, res) => {
 - Data Manipulation Language: `DML`
     - pl.: `DELETE FROM cars`
    
+# Lekérdezések bővítés
+- branch: 06_Lekérdezések_Bővítés
