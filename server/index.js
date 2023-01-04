@@ -2,6 +2,8 @@ const express = require("express");
 const app = express();
 const mysql = require("mysql");
 const bodyParser = require("body-parser");
+const sanitizeHtml = require("sanitize-html")
+
 
 function getConnection() {
   return mysql.createConnection({
@@ -112,9 +114,9 @@ app.post("/cars", bodyParser.json(), (req, res) => {
   let connection = getConnection();
   connection.connect();
   const newCar = {
-    name: req.body.name,
-    licenceNumber: req.body.licenceNumber,
-    hourlyRate: req.body.hourlyRate,
+    name: sanitizeHtml(req.body.name),
+    licenceNumber: sanitizeHtml(req.body.licenceNumber),
+    hourlyRate: +sanitizeHtml(req.body.hourlyRate)
   };
   let sql = `
     INSERT cars 
@@ -147,9 +149,9 @@ app.put("/cars/:id", bodyParser.json(), (req, res) => {
   let connection = getConnection();
   connection.connect();
   const updatedCar = {
-    name: req.body.name,
-    licenceNumber: req.body.licenceNumber,
-    hourlyRate: req.body.hourlyRate,
+    name: sanitizeHtml(req.body.name),
+    licenceNumber: sanitizeHtml(req.body.licenceNumber),
+    hourlyRate: +sanitizeHtml(req.body.hourlyRate)
   };
   let sql = `
     UPDATE cars SET

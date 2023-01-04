@@ -32,6 +32,7 @@
 - nodemon (ha még nincs letöltve): `npm i -g nodemon`
 - [express](https://www.npmjs.com/package/express): `npm i express`
 - [mysql](https://www.npmjs.com/package/mysql): `mpm i mysql`
+- [sanitize-html](https://www.npmjs.com/package/sanitize-html): `npm i sanitize-html`
 
 ## dev script megírása (package.json)
 ```json
@@ -257,4 +258,6 @@ app.get("/cars", (req, res) => {
 });
 ```
 
+# XSS védelem
+[XSS támadás](https://www.cert.hu/cross-site-scripting-xss)
 

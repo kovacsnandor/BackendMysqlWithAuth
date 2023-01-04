@@ -31,6 +31,16 @@ Content-Type: application/json
     "hourlyRate": 2500
 }
 
+### post car XSS teszt
+post http://localhost:3000/cars
+Content-Type: application/json
+
+{
+    "name": "X Mercedes <script>alert('betörtem')</script>",
+    "licenceNumber": "MM-111 <script>alert('betörtem')</script>",
+    "hourlyRate": "2500  <script>alert('betörtem')</script>"
+}
+
 ### put car by id
 put http://localhost:3000/cars/4
 Content-Type: application/json
@@ -39,4 +49,14 @@ Content-Type: application/json
     "name": "Mercedes2",
     "licenceNumber": "MM-222",
     "hourlyRate": 2600
+}
+
+### put car by id XSS teszt
+put http://localhost:3000/cars/11
+Content-Type: application/json
+
+{
+    "name": "XY Mercedes <script>alert('betörtem')</script>",
+    "licenceNumber": "YM-111 <script>alert('betörtem')</script>",
+    "hourlyRate": "2600  <script>alert('betörtem')</script>"
 }
