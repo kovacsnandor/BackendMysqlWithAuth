@@ -172,3 +172,5 @@ app.get("/cars/:id", (req, res) => {
    
 # Lekérdezések bővítés
 - branch: 06_Lekérdezések_Bővítés
+
+## trips hozzárakása a cars-hoz

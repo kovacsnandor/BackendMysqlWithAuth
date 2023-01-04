@@ -129,3 +129,7 @@ UPDATE cars SET
   licenceNumber = 'MM-111',
   hourlyRate = 2200
   WHERE id = 4;
+
+# adott kocsi trips-jei
+SELECT * from trips
+  WHERE carId = 1;

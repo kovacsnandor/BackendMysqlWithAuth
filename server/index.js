@@ -12,16 +12,42 @@ function getConnection() {
   });
 }
 
+function getTrips(carId) {
+  return new Promise((res, rej) => {
+    var connection = getConnection();
+    connection.connect();
+
+    let sql = `
+      SELECT * from trips
+      WHERE carId = ?
+      `;
+    connection.query(sql, [carId], async function (error, results, fields) {
+      if (error) {
+        console.log(error);
+        return { error: "error" };
+      }
+      res(results);
+    });
+    connection.end();
+  });
+}
+
 app.get("/cars", (req, res) => {
   var connection = getConnection();
   connection.connect();
 
   let sql = `SELECT * FROM cars`;
-  connection.query(sql, function (error, results, fields) {
+  connection.query(sql, async function (error, results, fields) {
     if (error) {
       console.log(error);
       return;
     }
+
+    //Végigmegyünk a kocsikon, és berakjuk a trips-eket
+    for (const car of results) {
+      car.trips = await getTrips(car.id);
+    }
+
     res.send(results);
   });
 
@@ -37,7 +63,7 @@ app.get("/cars/:id", (req, res) => {
     SELECT * FROM cars
     WHERE id = ?`;
 
-  connection.query(sql, [id], function (error, results, fields) {
+  connection.query(sql, [id], async function (error, results, fields) {
     if (error) {
       console.log(error);
       res.send({ error: `sql error` });
@@ -47,8 +73,8 @@ app.get("/cars/:id", (req, res) => {
       res.send({ error: `Not found id: ${id}` });
       return;
     }
-
-    res.send(results);
+    results[0].trips = await getTrips(id);
+    res.send(results[0]);
   });
 
   connection.end();
@@ -105,7 +131,7 @@ app.post("/cars", bodyParser.json(), (req, res) => {
         res.send({ error: `Insert falied` });
         return;
       }
-      newCar.id = result.insertId
+      newCar.id = result.insertId;
       res.send(newCar);
     }
   );
@@ -113,41 +139,40 @@ app.post("/cars", bodyParser.json(), (req, res) => {
   connection.end();
 });
 
-
 app.put("/cars/:id", bodyParser.json(), (req, res) => {
-    const id = req.params.id;
-    let connection = getConnection();
-    connection.connect();
-    const updatedCar = {
-      name: req.body.name,
-      licenceNumber: req.body.licenceNumber,
-      hourlyRate: req.body.hourlyRate,
-    };
-    let sql = `
+  const id = req.params.id;
+  let connection = getConnection();
+  connection.connect();
+  const updatedCar = {
+    name: req.body.name,
+    licenceNumber: req.body.licenceNumber,
+    hourlyRate: req.body.hourlyRate,
+  };
+  let sql = `
     UPDATE cars SET
     name = ?,
     licenceNumber = ?,
     hourlyRate = ?
     WHERE id = ?
       `;
-    connection.query(
-      sql,
-      [updatedCar.name, updatedCar.licenceNumber, updatedCar.hourlyRate, id],
-      function (error, result, fields) {
-        if (error) {
-          res.send({ error: `sql error` });
-          return;
-        }
-        if (!result.affectedRows) {
-          res.send({ error: `Insert falied` });
-          return;
-        }
-        updatedCar.id = id
-        res.send(updatedCar);
+  connection.query(
+    sql,
+    [updatedCar.name, updatedCar.licenceNumber, updatedCar.hourlyRate, id],
+    function (error, result, fields) {
+      if (error) {
+        res.send({ error: `sql error` });
+        return;
       }
-    );
-  
-    connection.end();
-  });
+      if (!result.affectedRows) {
+        res.send({ error: `Insert falied` });
+        return;
+      }
+      updatedCar.id = id;
+      res.send(updatedCar);
+    }
+  );
+
+  connection.end();
+});
 
 app.listen(3000);
