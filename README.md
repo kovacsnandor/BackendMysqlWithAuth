@@ -261,3 +261,12 @@ app.get("/cars", (req, res) => {
 # XSS védelem
 [XSS támadás](https://www.cert.hu/cross-site-scripting-xss)
 
+# Trips CRUD
+- branch: 08_Trips_CRUD
+
+## Date format
+[date-format()](https://www.w3schools.com/sql/func_mysql_date_format.asp)
+```sql
+SELECT id, numberOfMinits, DATE_FORMAT(date, '%Y.%m.%d %h:%i:%s') from trips
+  WHERE carId = 1;
+```

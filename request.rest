@@ -60,3 +60,33 @@ Content-Type: application/json
     "licenceNumber": "YM-111 <script>alert('betörtem')</script>",
     "hourlyRate": "2600  <script>alert('betörtem')</script>"
 }
+
+### get trips by carId
+get http://localhost:3000/tripsByCarId/1
+
+### get trips by id
+get http://localhost:3000/trips/56
+
+### get trips
+get http://localhost:3000/trips
+
+### post trip
+post http://localhost:3000/trips
+Content-Type: application/json
+
+{
+    "numberOfMinits": 56,
+    "date": "2022.10.13 01:36:00",
+    "carId": 3
+}
+
+
+### put trip by id
+put http://localhost:3000/trips/56
+Content-Type: application/json
+
+{
+    "numberOfMinits": 55,
+    "date": "2022.10.13 01:35:00",
+    "carId": 2
+}

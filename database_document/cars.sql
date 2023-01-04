@@ -83,11 +83,6 @@ select randomAuto();
 
 CALL tesztAdatokAutomata(10, '2022.10.13 12:00:00', 2, 5);
 
-# Lekérdezések
-
-# get http://localhost:3000/cars/1
-SELECT * FROM cars
-  WHERE id = 1;
 
 # -------------------------------------
 # sql injection
@@ -112,6 +107,15 @@ SELECT * FROM cars
 SELECT * FROM cars
   WHERE id = 1 union select email, password, '','' from users;
 
+
+# ----------------------------
+# Lekérdezések
+
+# get http://localhost:3000/cars/1
+SELECT * FROM cars
+  WHERE id = 1;
+
+
 ## Adatmanipulációk
 # car törlés
 DELETE FROM cars
@@ -131,5 +135,18 @@ UPDATE cars SET
   WHERE id = 4;
 
 # adott kocsi trips-jei
-SELECT * from trips
+SELECT id, numberOfMinits, DATE_FORMAT(date, '%Y.%m.%d %h:%i:%s') date from trips
   WHERE carId = 1;
+
+# trips by id
+SELECT id, numberOfMinits, DATE_FORMAT(date, '%Y.%m.%d %h:%i:%s') date from trips
+  WHERE id = 9;
+
+# trips by id
+SELECT id, numberOfMinits, DATE_FORMAT(date, '%Y.%m.%d %h:%i:%s') date from trips;
+
+# insert trips
+INSERT trips 
+  (numberOfMinits, date, carId)
+  VALUES
+  (25, '2022.10.13 12:20:00', 1);

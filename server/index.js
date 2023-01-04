@@ -21,9 +21,8 @@ function getTrips(carId) {
     connection.connect();
 
     let sql = `
-      SELECT * from trips
-      WHERE carId = ?
-      `;
+    SELECT id, numberOfMinits, DATE_FORMAT(date, '%Y.%m.%d %h:%i:%s') date, carId from trips
+    WHERE carId = ?`;
     connection.query(sql, [carId], async function (error, results, fields) {
       if (error) {
         console.log(error);
@@ -179,5 +178,157 @@ app.put("/cars/:id", bodyParser.json(), (req, res) => {
 
   connection.end();
 });
+
+//trips ---------------
+app.get("/tripsByCarId/:id", (req, res) => {
+  const id = req.params.id;
+  var connection = getConnection();
+  connection.connect();
+
+  let sql = `
+    SELECT id, numberOfMinits, DATE_FORMAT(date, '%Y.%m.%d %h:%i:%s') date, carId from trips
+    WHERE carId = ?`;
+
+  connection.query(sql, [id], function (error, results, fields) {
+    if (error) {
+      console.log(error);
+      res.send({ error: `sql error` });
+      return;
+    }
+    if (results.length == 0) {
+      res.send({ error: `Not found id: ${id}` });
+      return;
+    }
+    
+    res.send(results);
+  });
+
+  connection.end();
+});
+
+app.get("/trips/:id", (req, res) => {
+  const id = req.params.id;
+  var connection = getConnection();
+  connection.connect();
+
+  let sql = `
+    SELECT id, numberOfMinits, DATE_FORMAT(date, '%Y.%m.%d %h:%i:%s') date, carId from trips
+    WHERE id = ?`;
+
+  connection.query(sql, [id], function (error, results, fields) {
+    if (error) {
+      console.log(error);
+      res.send({ error: `sql error` });
+      return;
+    }
+    if (results.length == 0) {
+      res.send({ error: `Not found id: ${id}` });
+      return;
+    }
+    
+    res.send(results);
+  });
+
+  connection.end();
+});
+
+app.get("/trips", (req, res) => {
+  const id = req.params.id;
+  var connection = getConnection();
+  connection.connect();
+
+  let sql = `
+    SELECT id, numberOfMinits, DATE_FORMAT(date, '%Y.%m.%d %h:%i:%s') date, carId from trips`;
+
+  connection.query(sql, function (error, results, fields) {
+    if (error) {
+      console.log(error);
+      res.send({ error: `sql error` });
+      return;
+    }
+    if (results.length == 0) {
+      res.send({ error: `Not found id: ${id}` });
+      return;
+    }
+    
+    res.send(results);
+  });
+
+  connection.end();
+});
+
+
+app.post("/trips", bodyParser.json(), (req, res) => {
+  let connection = getConnection();
+  connection.connect();
+  const newTrip = {
+    numberOfMinits: sanitizeHtml(req.body.numberOfMinits),
+    date: sanitizeHtml(req.body.date),
+    carId: +sanitizeHtml(req.body.carId)
+  };
+  let sql = `
+  INSERT trips 
+  (numberOfMinits, date, carId)
+  VALUES
+  (?, ?, ?)
+    `;
+  connection.query(
+    sql,
+    [newTrip.numberOfMinits, newTrip.date, newTrip.carId],
+    function (error, result, fields) {
+      if (error) {
+        res.send({ error: `sql error` });
+        return;
+      }
+      if (!result.affectedRows) {
+        res.send({ error: `Insert falied` });
+        return;
+      }
+      newTrip.id = result.insertId;
+      res.send(newTrip);
+    }
+  );
+
+  connection.end();
+});
+
+
+app.put("/trips/:id", bodyParser.json(), (req, res) => {
+  const id = req.params.id;
+  let connection = getConnection();
+  connection.connect();
+  const newTrip = {
+    numberOfMinits: sanitizeHtml(req.body.numberOfMinits),
+    date: sanitizeHtml(req.body.date),
+    carId: +sanitizeHtml(req.body.carId)
+  };
+  let sql = `
+    UPDATE trips SET
+    numberOfMinits = ?,
+    date = ?,
+    carId = ?
+    WHERE id = ?
+      `;
+  connection.query(
+    sql,
+    [newTrip.numberOfMinits, newTrip.date, newTrip.carId, id],
+    function (error, result, fields) {
+      if (error) {
+        res.send({ error: `sql error` });
+        return;
+      }
+      if (!result.affectedRows) {
+        res.send({ error: `Update falied` });
+        return;
+      }
+      newTrip.id = id;
+      res.send(newTrip);
+    }
+  );
+
+  connection.end();
+});
+
+
 
 app.listen(3000);
