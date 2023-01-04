@@ -174,3 +174,87 @@ app.get("/cars/:id", (req, res) => {
 - branch: 06_Lekérdezések_Bővítés
 
 ## trips hozzárakása a cars-hoz
+A `get /cars` és `get /cars/:id`-nél ilyen választ generálunk:
+```json
+[
+  {
+    "id": 1,
+    "name": "BMW",
+    "licenceNumber": "BM-1928",
+    "hourlyRate": 2810,
+    "trips": [
+      {
+        "id": 9,
+        "numberOfMinits": 56,
+        "date": "2022-10-13T11:36:00.000Z",
+        "carId": 1
+      },
+      {
+        "id": 10,
+        "numberOfMinits": 46,
+        "date": "2022-10-13T12:45:00.000Z",
+        "carId": 1
+      },
+      {
+        "id": 11,
+        "numberOfMinits": 54,
+        "date": "2022-10-13T13:48:00.000Z",
+        "carId": 1
+      }
+    ]
+  },
+  {...},
+  ...
+]
+```
+A megvalósítás: 
+- async fügvénnyel
+- A getTrips() promisszal tér vissza, így a visszatérési érték az await miatt a res függvény paramétere: results
+```js
+//A függvény egy promisszal tér vissza
+function getTrips(carId) {
+  return new Promise((res, rej) => {
+    var connection = getConnection();
+    connection.connect();
+
+    let sql = `
+      SELECT * from trips
+      WHERE carId = ?
+      `;
+    connection.query(sql, [carId], async function (error, results, fields) {
+      if (error) {
+        console.log(error);
+        return { error: "error" };
+      }
+      //Az await miatt a car.trips a results-ot kapja értékül
+      res(results);
+    });
+    connection.end();
+  });
+}
+
+app.get("/cars", (req, res) => {
+  var connection = getConnection();
+  connection.connect();
+
+  let sql = `SELECT * FROM cars`;
+  connection.query(sql, async function (error, results, fields) {
+    if (error) {
+      console.log(error);
+      return;
+    }
+
+    //Végigmegyünk a kocsikon, és berakjuk a trips-eket
+    for (const car of results) {
+      //A promise a results-ot ada vissza
+      car.trips = await getTrips(car.id);
+    }
+
+    res.send(results);
+  });
+
+  connection.end();
+});
+```
+
+

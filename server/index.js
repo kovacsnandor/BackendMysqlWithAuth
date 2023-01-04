@@ -12,6 +12,7 @@ function getConnection() {
   });
 }
 
+//A függvény egy promisszal tér vissza
 function getTrips(carId) {
   return new Promise((res, rej) => {
     var connection = getConnection();
@@ -26,6 +27,7 @@ function getTrips(carId) {
         console.log(error);
         return { error: "error" };
       }
+      //Az await miatt a car.trips a results-ot kapja értékül
       res(results);
     });
     connection.end();
@@ -45,6 +47,7 @@ app.get("/cars", (req, res) => {
 
     //Végigmegyünk a kocsikon, és berakjuk a trips-eket
     for (const car of results) {
+      //A promise a results-ot ada vissza
       car.trips = await getTrips(car.id);
     }
 
