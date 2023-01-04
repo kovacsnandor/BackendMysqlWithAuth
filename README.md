@@ -267,6 +267,6 @@ app.get("/cars", (req, res) => {
 ## Date format
 [date-format()](https://www.w3schools.com/sql/func_mysql_date_format.asp)
 ```sql
-SELECT id, numberOfMinits, DATE_FORMAT(date, '%Y.%m.%d %h:%i:%s') from trips
+SELECT id, numberOfMinits, DATE_FORMAT(date, '%Y.%m.%d %h:%i:%s') date, carId from trips
   WHERE carId = 1;
 ```
