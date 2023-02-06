@@ -3,27 +3,17 @@ const app = express();
 const mysql = require("mysql");
 const bodyParser = require("body-parser");
 const sanitizeHtml = require("sanitize-html")
+const pool = require("./config/database.js")
 
-
-function getConnection() {
-  return mysql.createConnection({
-    host: "localhost",
-    user: "root",
-    password: "",
-    database: "taxi5",
-  });
-}
 
 //A függvény egy promisszal tér vissza
 function getTrips(carId) {
   return new Promise((res, rej) => {
-    var connection = getConnection();
-    connection.connect();
 
     let sql = `
     SELECT id, numberOfMinits, DATE_FORMAT(date, '%Y.%m.%d %h:%i:%s') date, carId from trips
     WHERE carId = ?`;
-    connection.query(sql, [carId], async function (error, results, fields) {
+    pool.query(sql, [carId], async function (error, results, fields) {
       if (error) {
         console.log(error);
         return { error: "error" };
@@ -31,16 +21,13 @@ function getTrips(carId) {
       //Az await miatt a car.trips a results-ot kapja értékül
       res(results);
     });
-    connection.end();
   });
 }
 
 app.get("/cars", (req, res) => {
-  var connection = getConnection();
-  connection.connect();
 
   let sql = `SELECT * FROM cars`;
-  connection.query(sql, async function (error, results, fields) {
+  pool.query(sql, async function (error, results, fields) {
     if (error) {
       console.log(error);
       return;
@@ -55,19 +42,16 @@ app.get("/cars", (req, res) => {
     res.send(results);
   });
 
-  connection.end();
 });
 
 app.get("/cars/:id", (req, res) => {
   const id = req.params.id;
-  var connection = getConnection();
-  connection.connect();
 
   let sql = `
     SELECT * FROM cars
     WHERE id = ?`;
 
-  connection.query(sql, [id], async function (error, results, fields) {
+  pool.query(sql, [id], async function (error, results, fields) {
     if (error) {
       console.log(error);
       res.send({ error: `sql error` });
@@ -80,20 +64,16 @@ app.get("/cars/:id", (req, res) => {
     results[0].trips = await getTrips(id);
     res.send(results[0]);
   });
-
-  connection.end();
 });
 
 app.delete("/cars/:id", (req, res) => {
   const id = req.params.id;
-  var connection = getConnection();
-  connection.connect();
 
   let sql = `
     DELETE FROM cars
     WHERE id = ?`;
 
-  connection.query(sql, [id], function (error, result, fields) {
+  pool.query(sql, [id], function (error, result, fields) {
     if (error) {
       res.send({ error: `sql error` });
       return;
@@ -106,12 +86,9 @@ app.delete("/cars/:id", (req, res) => {
     res.send({ id: id });
   });
 
-  connection.end();
 });
 
 app.post("/cars", bodyParser.json(), (req, res) => {
-  let connection = getConnection();
-  connection.connect();
   const newCar = {
     name: sanitizeHtml(req.body.name),
     licenceNumber: sanitizeHtml(req.body.licenceNumber),
@@ -123,7 +100,7 @@ app.post("/cars", bodyParser.json(), (req, res) => {
     VALUES
     (?, ?, ?)
     `;
-  connection.query(
+  pool.query(
     sql,
     [newCar.name, newCar.licenceNumber, newCar.hourlyRate],
     function (error, result, fields) {
@@ -140,13 +117,10 @@ app.post("/cars", bodyParser.json(), (req, res) => {
     }
   );
 
-  connection.end();
 });
 
 app.put("/cars/:id", bodyParser.json(), (req, res) => {
   const id = req.params.id;
-  let connection = getConnection();
-  connection.connect();
   const updatedCar = {
     name: sanitizeHtml(req.body.name),
     licenceNumber: sanitizeHtml(req.body.licenceNumber),
@@ -159,7 +133,7 @@ app.put("/cars/:id", bodyParser.json(), (req, res) => {
     hourlyRate = ?
     WHERE id = ?
       `;
-  connection.query(
+  pool.query(
     sql,
     [updatedCar.name, updatedCar.licenceNumber, updatedCar.hourlyRate, id],
     function (error, result, fields) {
@@ -175,21 +149,16 @@ app.put("/cars/:id", bodyParser.json(), (req, res) => {
       res.send(updatedCar);
     }
   );
-
-  connection.end();
 });
 
 //trips ---------------
 app.get("/tripsByCarId/:id", (req, res) => {
   const id = req.params.id;
-  var connection = getConnection();
-  connection.connect();
-
   let sql = `
     SELECT id, numberOfMinits, DATE_FORMAT(date, '%Y.%m.%d %h:%i:%s') date, carId from trips
     WHERE carId = ?`;
 
-  connection.query(sql, [id], function (error, results, fields) {
+  pool.query(sql, [id], function (error, results, fields) {
     if (error) {
       console.log(error);
       res.send({ error: `sql error` });
@@ -202,20 +171,15 @@ app.get("/tripsByCarId/:id", (req, res) => {
     
     res.send(results);
   });
-
-  connection.end();
 });
 
 app.get("/trips/:id", (req, res) => {
   const id = req.params.id;
-  var connection = getConnection();
-  connection.connect();
-
   let sql = `
     SELECT id, numberOfMinits, DATE_FORMAT(date, '%Y.%m.%d %h:%i:%s') date, carId from trips
     WHERE id = ?`;
 
-  connection.query(sql, [id], function (error, results, fields) {
+  pool.query(sql, [id], function (error, results, fields) {
     if (error) {
       console.log(error);
       res.send({ error: `sql error` });
@@ -228,19 +192,14 @@ app.get("/trips/:id", (req, res) => {
     
     res.send(results);
   });
-
-  connection.end();
 });
 
 app.get("/trips", (req, res) => {
   const id = req.params.id;
-  var connection = getConnection();
-  connection.connect();
-
   let sql = `
     SELECT id, numberOfMinits, DATE_FORMAT(date, '%Y.%m.%d %h:%i:%s') date, carId from trips`;
 
-  connection.query(sql, function (error, results, fields) {
+  pool.query(sql, function (error, results, fields) {
     if (error) {
       console.log(error);
       res.send({ error: `sql error` });
@@ -253,14 +212,10 @@ app.get("/trips", (req, res) => {
     
     res.send(results);
   });
-
-  connection.end();
 });
 
 
 app.post("/trips", bodyParser.json(), (req, res) => {
-  let connection = getConnection();
-  connection.connect();
   const newTrip = {
     numberOfMinits: sanitizeHtml(req.body.numberOfMinits),
     date: sanitizeHtml(req.body.date),
@@ -272,7 +227,7 @@ app.post("/trips", bodyParser.json(), (req, res) => {
   VALUES
   (?, ?, ?)
     `;
-  connection.query(
+  pool.query(
     sql,
     [newTrip.numberOfMinits, newTrip.date, newTrip.carId],
     function (error, result, fields) {
@@ -289,14 +244,11 @@ app.post("/trips", bodyParser.json(), (req, res) => {
     }
   );
 
-  connection.end();
 });
 
 
 app.put("/trips/:id", bodyParser.json(), (req, res) => {
   const id = req.params.id;
-  let connection = getConnection();
-  connection.connect();
   const newTrip = {
     numberOfMinits: sanitizeHtml(req.body.numberOfMinits),
     date: sanitizeHtml(req.body.date),
@@ -309,7 +261,7 @@ app.put("/trips/:id", bodyParser.json(), (req, res) => {
     carId = ?
     WHERE id = ?
       `;
-  connection.query(
+  pool.query(
     sql,
     [newTrip.numberOfMinits, newTrip.date, newTrip.carId, id],
     function (error, result, fields) {
@@ -325,10 +277,10 @@ app.put("/trips/:id", bodyParser.json(), (req, res) => {
       res.send(newTrip);
     }
   );
-
-  connection.end();
 });
 
 
 
-app.listen(3000);
+app.listen(process.env.APP_PORT, () => {
+  console.log(`Data server listen port: ${process.env.APP_PORT}`);
+});
