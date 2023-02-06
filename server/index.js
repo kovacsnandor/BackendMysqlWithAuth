@@ -10,7 +10,7 @@ function getConnection() {
     host: "localhost",
     user: "root",
     password: "",
-    database: "cars",
+    database: "taxi5",
   });
 }
 
