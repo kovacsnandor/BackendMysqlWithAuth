@@ -2,14 +2,77 @@ const express = require("express");
 const app = express();
 const mysql = require("mysql");
 const bodyParser = require("body-parser");
-const sanitizeHtml = require("sanitize-html")
-const pool = require("./config/database.js")
+const sanitizeHtml = require("sanitize-html");
+const pool = require("./config/database.js");
 
+//#region Users
+app.get("/users", (req, res) => {
+  let sql = `SELECT * FROM users`;
+  pool.query(sql, async function (error, results, fields) {
+    if (error) {
+      console.log(error);
+      return;
+    }
+    res.send(results);
+  });
+});
+
+app.get("/users/:id", (req, res) => {
+  const id = req.params.id;
+  let sql = `
+    SELECT * FROM users
+    WHERE id = ?`;
+  pool.query(sql, [id], async function (error, results, fields) {
+    if (error) {
+      console.log(error);
+      res.send({ error: `sql error` });
+      return;
+    }
+    if (results.length == 0) {
+      res.send({ error: `Not found id: ${id}` });
+      return;
+    }
+    res.send(results[0]);
+  });
+});
+
+app.post("/cars", bodyParser.json(), (req, res) => {
+  const newCar = {
+    firstName: mySanitizeHtml(req.body.firstName),
+    lastName: mySanitizeHtml(req.body.lastName),
+    gender: mySanitizeHtml(req.body.gender),
+    email: mySanitizeHtml(req.body.email),
+    password: mySanitizeHtml(req.body.password),
+    number: mySanitizeHtml(req.body.number)
+  };
+  let sql = `insert into registration
+      (firstName, lastName, gender, email, password, number)
+      values
+      (?,?,?,?,?,?)
+    `;
+  pool.query(
+    sql,
+    [newCar.name, newCar.licenceNumber, newCar.hourlyRate],
+    function (error, result, fields) {
+      if (error) {
+        res.send({ error: `sql error` });
+        return;
+      }
+      if (!result.affectedRows) {
+        res.send({ error: `Insert falied` });
+        return;
+      }
+      newCar.id = result.insertId;
+      res.send(newCar);
+    }
+  );
+});
+
+//#endregion Users
 
 //A függvény egy promisszal tér vissza
 function getTrips(carId) {
   return new Promise((res, rej) => {
-
     let sql = `
     SELECT id, numberOfMinits, DATE_FORMAT(date, '%Y.%m.%d %h:%i:%s') date, carId from trips
     WHERE carId = ?`;
@@ -25,7 +88,6 @@ function getTrips(carId) {
 }
 
 app.get("/cars", (req, res) => {
-
   let sql = `SELECT * FROM cars`;
   pool.query(sql, async function (error, results, fields) {
     if (error) {
@@ -41,7 +103,6 @@ app.get("/cars", (req, res) => {
 
     res.send(results);
   });
-
 });
 
 app.get("/cars/:id", (req, res) => {
@@ -85,14 +146,13 @@ app.delete("/cars/:id", (req, res) => {
 
     res.send({ id: id });
   });
-
 });
 
 app.post("/cars", bodyParser.json(), (req, res) => {
   const newCar = {
     name: sanitizeHtml(req.body.name),
     licenceNumber: sanitizeHtml(req.body.licenceNumber),
-    hourlyRate: +sanitizeHtml(req.body.hourlyRate)
+    hourlyRate: +sanitizeHtml(req.body.hourlyRate),
   };
   let sql = `
     INSERT cars 
@@ -116,7 +176,6 @@ app.post("/cars", bodyParser.json(), (req, res) => {
       res.send(newCar);
     }
   );
-
 });
 
 app.put("/cars/:id", bodyParser.json(), (req, res) => {
@@ -124,7 +183,7 @@ app.put("/cars/:id", bodyParser.json(), (req, res) => {
   const updatedCar = {
     name: sanitizeHtml(req.body.name),
     licenceNumber: sanitizeHtml(req.body.licenceNumber),
-    hourlyRate: +sanitizeHtml(req.body.hourlyRate)
+    hourlyRate: +sanitizeHtml(req.body.hourlyRate),
   };
   let sql = `
     UPDATE cars SET
@@ -168,7 +227,7 @@ app.get("/tripsByCarId/:id", (req, res) => {
       res.send({ error: `Not found id: ${id}` });
       return;
     }
-    
+
     res.send(results);
   });
 });
@@ -189,7 +248,7 @@ app.get("/trips/:id", (req, res) => {
       res.send({ error: `Not found id: ${id}` });
       return;
     }
-    
+
     res.send(results);
   });
 });
@@ -209,17 +268,16 @@ app.get("/trips", (req, res) => {
       res.send({ error: `Not found id: ${id}` });
       return;
     }
-    
+
     res.send(results);
   });
 });
-
 
 app.post("/trips", bodyParser.json(), (req, res) => {
   const newTrip = {
     numberOfMinits: sanitizeHtml(req.body.numberOfMinits),
     date: sanitizeHtml(req.body.date),
-    carId: +sanitizeHtml(req.body.carId)
+    carId: +sanitizeHtml(req.body.carId),
   };
   let sql = `
   INSERT trips 
@@ -243,16 +301,14 @@ app.post("/trips", bodyParser.json(), (req, res) => {
       res.send(newTrip);
     }
   );
-
 });
-
 
 app.put("/trips/:id", bodyParser.json(), (req, res) => {
   const id = req.params.id;
   const newTrip = {
     numberOfMinits: sanitizeHtml(req.body.numberOfMinits),
     date: sanitizeHtml(req.body.date),
-    carId: +sanitizeHtml(req.body.carId)
+    carId: +sanitizeHtml(req.body.carId),
   };
   let sql = `
     UPDATE trips SET
@@ -279,7 +335,12 @@ app.put("/trips/:id", bodyParser.json(), (req, res) => {
   );
 });
 
-
+function mySanitizeHtml(data) {
+  SanitizeHtml(data, {
+    allowedTags: [],
+    allowedAttributes: {}
+  });
+}
 
 app.listen(process.env.APP_PORT, () => {
   console.log(`Data server listen port: ${process.env.APP_PORT}`);
