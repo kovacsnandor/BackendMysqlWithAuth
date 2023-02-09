@@ -1,11 +1,18 @@
 const express = require("express");
 const app = express();
 const mysql = require("mysql");
-const bodyParser = require("body-parser");
 const sanitizeHtml = require("sanitize-html");
 const pool = require("./config/database.js");
+const { genSaltSync, hashSync, compareSync } = require("bcrypt");
 
-//#region Users
+//#region Middleware
+//json-al kommunikáljon
+app.use(express.json());
+
+//#endregion Middleware
+
+
+//#region Users ---
 app.get("/users", (req, res) => {
   let sql = `SELECT * FROM users`;
   pool.query(sql, async function (error, results, fields) {
@@ -36,23 +43,34 @@ app.get("/users/:id", (req, res) => {
   });
 });
 
-app.post("/cars", bodyParser.json(), (req, res) => {
-  const newCar = {
+app.post("/users", (req, res) => {
+  const salt = genSaltSync(10);
+  req.body.password = hashSync(req.body.password, salt);
+  const newR = {
     firstName: mySanitizeHtml(req.body.firstName),
     lastName: mySanitizeHtml(req.body.lastName),
     gender: mySanitizeHtml(req.body.gender),
+    userName: mySanitizeHtml(req.body.userName),
     email: mySanitizeHtml(req.body.email),
     password: mySanitizeHtml(req.body.password),
-    number: mySanitizeHtml(req.body.number)
+    number: +mySanitizeHtml(req.body.number),
   };
-  let sql = `insert into registration
-      (firstName, lastName, gender, email, password, number)
+  let sql = `insert into users
+      (firstName, lastName, gender, userName, email, password, number)
       values
-      (?,?,?,?,?,?)
+      (?,?,?,?,?,?,?)
     `;
   pool.query(
     sql,
-    [newCar.name, newCar.licenceNumber, newCar.hourlyRate],
+    [
+      newR.firstName,
+      newR.lastName,
+      newR.gender,
+      newR.userName,
+      newR.email,
+      newR.password,
+      newR.number,
+    ],
     function (error, result, fields) {
       if (error) {
         res.send({ error: `sql error` });
@@ -62,14 +80,88 @@ app.post("/cars", bodyParser.json(), (req, res) => {
         res.send({ error: `Insert falied` });
         return;
       }
-      newCar.id = result.insertId;
-      res.send(newCar);
+      newR.id = result.insertId;
+      res.send(newR);
+    }
+  );
+});
+
+app.delete("/users/:id", (req, res) => {
+  const id = req.params.id;
+
+  let sql = `
+    DELETE FROM users
+    WHERE id = ?`;
+
+  pool.query(sql, [id], function (error, result, fields) {
+    if (error) {
+      res.send({ error: `sql error` });
+      return;
+    }
+    if (!result.affectedRows) {
+      res.send({ error: `Not found id: ${id}` });
+      return;
+    }
+
+    res.send({ id: id });
+  });
+});
+
+app.put("/users/:id", (req, res) => {
+  const id = req.params.id;
+  const salt = genSaltSync(10);
+  req.body.password = hashSync(req.body.password, salt);
+  const newR = {
+    firstName: mySanitizeHtml(req.body.firstName),
+    lastName: mySanitizeHtml(req.body.lastName),
+    gender: mySanitizeHtml(req.body.gender),
+    userName: mySanitizeHtml(req.body.userName),
+    email: mySanitizeHtml(req.body.email),
+    password: mySanitizeHtml(req.body.password),
+    number: +mySanitizeHtml(req.body.number),
+  };
+  console.log(newR);
+  let sql = `
+    UPDATE users SET
+    firstName = ?,
+    lastName = ?,
+    gender = ?,
+    userName = ?,
+    email = ?,
+    password = ?,
+    number = ?
+    WHERE id = ?
+      `;
+  pool.query(
+    sql,
+    [
+      newR.firstName,
+      newR.lastName,
+      newR.gender,
+      newR.userName,
+      newR.email,
+      newR.password,
+      newR.number,
+      id
+    ],
+    function (error, result, fields) {
+      if (error) {
+        res.send({ error: `sql error` });
+        return;
+      }
+      if (!result.affectedRows) {
+        res.send({ error: `Insert falied` });
+        return;
+      }
+      newR.id = id;
+      res.send(newR);
     }
   );
 });
 
 //#endregion Users
 
+//#region cars ---
 //A függvény egy promisszal tér vissza
 function getTrips(carId) {
   return new Promise((res, rej) => {
@@ -148,7 +240,7 @@ app.delete("/cars/:id", (req, res) => {
   });
 });
 
-app.post("/cars", bodyParser.json(), (req, res) => {
+app.post("/cars", (req, res) => {
   const newCar = {
     name: sanitizeHtml(req.body.name),
     licenceNumber: sanitizeHtml(req.body.licenceNumber),
@@ -178,7 +270,7 @@ app.post("/cars", bodyParser.json(), (req, res) => {
   );
 });
 
-app.put("/cars/:id", bodyParser.json(), (req, res) => {
+app.put("/cars/:id", (req, res) => {
   const id = req.params.id;
   const updatedCar = {
     name: sanitizeHtml(req.body.name),
@@ -209,8 +301,9 @@ app.put("/cars/:id", bodyParser.json(), (req, res) => {
     }
   );
 });
+//#endregion cars
 
-//trips ---------------
+//#region trips ---
 app.get("/tripsByCarId/:id", (req, res) => {
   const id = req.params.id;
   let sql = `
@@ -273,7 +366,7 @@ app.get("/trips", (req, res) => {
   });
 });
 
-app.post("/trips", bodyParser.json(), (req, res) => {
+app.post("/trips", (req, res) => {
   const newTrip = {
     numberOfMinits: sanitizeHtml(req.body.numberOfMinits),
     date: sanitizeHtml(req.body.date),
@@ -303,7 +396,7 @@ app.post("/trips", bodyParser.json(), (req, res) => {
   );
 });
 
-app.put("/trips/:id", bodyParser.json(), (req, res) => {
+app.put("/trips/:id", (req, res) => {
   const id = req.params.id;
   const newTrip = {
     numberOfMinits: sanitizeHtml(req.body.numberOfMinits),
@@ -334,11 +427,12 @@ app.put("/trips/:id", bodyParser.json(), (req, res) => {
     }
   );
 });
+//#endregion trips
 
 function mySanitizeHtml(data) {
-  SanitizeHtml(data, {
+  return sanitizeHtml(data, {
     allowedTags: [],
-    allowedAttributes: {}
+    allowedAttributes: {},
   });
 }
 

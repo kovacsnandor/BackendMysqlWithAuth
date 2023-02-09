@@ -1,3 +1,4 @@
+### #region users
 ### login
 post http://localhost:3000/api/users/login
 Content-Type: application/json
@@ -7,14 +8,12 @@ Content-Type: application/json
     "password": "test123"
 }
 
-
 ### Userek
 get http://localhost:3000/users
 Authorization: Bearer eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJyZXN1bHQiOnsiaWQiOjEsImZpcnN0TmFtZSI6IkLDqWxhIiwibGFzdE5hbWUiOiJOYWd5b24iLCJnZW5kZXIiOiJmw6lyZmkiLCJlbWFpbCI6Im5hZ3kuYmVsYUBnbWFpbC5jb20iLCJudW1iZXIiOjM0MzQzNTUzNH0sImlhdCI6MTY0NDkxNDQwMywiZXhwIjoxNjQ0OTE4MDAzfQ.HziYtxm6_7FDCIwLcupJVsE60purxD0Pu7Tib-o_lLA
 
-
 ### Egy user
-get http://localhost:3000/users/1
+get http://localhost:3000/users/2
 Authorization: Bearer eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJyZXN1bHQiOnsiaWQiOjEsImZpcnN0TmFtZSI6IkLDqWxhIiwibGFzdE5hbWUiOiJOYWd5b24iLCJnZW5kZXIiOiJmw6lyZmkiLCJlbWFpbCI6Im5hZ3kuYmVsYUBnbWFpbC5jb20iLCJudW1iZXIiOjM0MzQzNTUzNH0sImlhdCI6MTY0NDMxNTE5NCwiZXhwIjoxNjQ0MzE4Nzk0fQ.q2ih8UiVs51Pa3UEc908O6tLt5Upl9NOlidEmQSksMQ
 
 ### User hozzáadása
@@ -25,35 +24,29 @@ Content-Type: application/json
     "firstName": "Béla",
     "lastName": "Fehér",
     "gender": "férfi",
+    "userName": "bela",
     "email": "feher.bela@gmail.com",
     "password": "jozsi123",
     "number": 33333333
 }
 
 ### User módosítása
-put http://localhost:3000/users
+put http://localhost:3000/users/2
 Content-Type: application/json
 
 {
-    "firstName": "Béla",
-    "lastName": "Nagyon",
+    "firstName": "Józsi",
+    "lastName": "Balog",
     "gender": "férfi",
-    "email": "nagy.bela@gmail.com",
+    "userName": "jozsika",
+    "email": "balog.jozsi@gmail.com",
     "password": "test123",
-    "number": 343435534,
-    "id": 1
+    "number": 123456
 }
 
 ### Delete user
-delete http://localhost:3000/api/users
-Content-Type: application/json
-
-{
-    "id": 11
-}
-
-
-
+delete http://localhost:3000/users/1
+### #endregion users
 
 ### ---------------------------------------
 ### get cars
