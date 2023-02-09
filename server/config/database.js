@@ -1,4 +1,3 @@
-require("dotenv").config();
 const { createPool } = require("mysql");
 
 const pool = createPool({

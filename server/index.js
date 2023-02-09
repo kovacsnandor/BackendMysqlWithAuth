@@ -1,14 +1,22 @@
+require("dotenv").config();
+
 const express = require("express");
 const app = express();
 const mysql = require("mysql");
 const sanitizeHtml = require("sanitize-html");
 const pool = require("./config/database.js");
 const { genSaltSync, hashSync, compareSync } = require("bcrypt");
+var cors = require('cors');
+
 
 //#region Middleware
 //json-al kommunikáljon
 app.use(express.json());
-
+// mindenkivel enged kommunikálni
+app.use(cors({
+    origin: '*', //http://localhost:8080
+    methods: "GET,HEAD,PUT,PATCH,POST,DELETE"
+}));
 //#endregion Middleware
 
 
@@ -120,7 +128,6 @@ app.put("/users/:id", (req, res) => {
     password: mySanitizeHtml(req.body.password),
     number: +mySanitizeHtml(req.body.number),
   };
-  console.log(newR);
   let sql = `
     UPDATE users SET
     firstName = ?,
