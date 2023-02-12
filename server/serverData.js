@@ -6,7 +6,8 @@ const mysql = require("mysql");
 const sanitizeHtml = require("sanitize-html");
 const pool = require("./config/database.js");
 const { genSaltSync, hashSync, compareSync } = require("bcrypt");
-var cors = require('cors');
+const cors = require('cors');
+const {checkToken} = require("./config/checkToken.js");
 
 
 //#region Middleware
@@ -17,6 +18,8 @@ app.use(cors({
     origin: '*', //http://localhost:8080
     methods: "GET,HEAD,PUT,PATCH,POST,DELETE"
 }));
+//autentikáció
+app.use(checkToken);
 //#endregion Middleware
 
 
@@ -118,14 +121,16 @@ app.delete("/users/:id", (req, res) => {
 app.put("/users/:id", (req, res) => {
   const id = req.params.id;
   const salt = genSaltSync(10);
-  req.body.password = hashSync(req.body.password, salt);
+  let password = req.body.password;
+  password = hashSync(password, salt);
+
   const newR = {
     firstName: mySanitizeHtml(req.body.firstName),
     lastName: mySanitizeHtml(req.body.lastName),
     gender: mySanitizeHtml(req.body.gender),
     userName: mySanitizeHtml(req.body.userName),
     email: mySanitizeHtml(req.body.email),
-    password: mySanitizeHtml(req.body.password),
+    password: password,
     number: +mySanitizeHtml(req.body.number),
   };
   let sql = `
@@ -446,3 +451,5 @@ function mySanitizeHtml(data) {
 app.listen(process.env.APP_PORT, () => {
   console.log(`Data server listen port: ${process.env.APP_PORT}`);
 });
+
+module.exports = { genSaltSync, hashSync, compareSync };

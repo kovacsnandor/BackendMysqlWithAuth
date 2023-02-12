@@ -1,16 +1,20 @@
-### #region users
 ### login
-post http://localhost:3000/api/users/login
+post http://localhost:4000/login
 Content-Type: application/json
 
 {
-    "email": "nagy.bela@gmail.com",
+    "userName": "jozsika",
     "password": "test123"
 }
 
+
+### logout
+delete http://localhost:4000/logout
+Authorization: Bearer eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJuYW1lIjoiam96c2lrYSIsImlhdCI6MTY3NjIzMTgwN30.7HzUxCNDqfCE4l8i99cF3zseU3U7mSO8VixFJesq8Pg
+
 ### Userek
 get http://localhost:3000/users
-Authorization: Bearer eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJyZXN1bHQiOnsiaWQiOjEsImZpcnN0TmFtZSI6IkLDqWxhIiwibGFzdE5hbWUiOiJOYWd5b24iLCJnZW5kZXIiOiJmw6lyZmkiLCJlbWFpbCI6Im5hZ3kuYmVsYUBnbWFpbC5jb20iLCJudW1iZXIiOjM0MzQzNTUzNH0sImlhdCI6MTY0NDkxNDQwMywiZXhwIjoxNjQ0OTE4MDAzfQ.HziYtxm6_7FDCIwLcupJVsE60purxD0Pu7Tib-o_lLA
+Authorization: Bearer eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJuYW1lIjoiam96c2lrYSIsImlhdCI6MTY3NjIzMTgwNywiZXhwIjoxNjc2MjMyNzA3fQ.pmbnM9ujP5IT54Ap6xF2Mna-Uk73eLcPkFpzNw-6G-w
 
 ### Egy user
 get http://localhost:3000/users/2
