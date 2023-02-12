@@ -2,9 +2,10 @@
   "name": "server",
   "version": "1.0.0",
   "description": "",
-  "main": "index.js",
+  "main": "serverData.js",
   "scripts": {
-    "dev": "nodemon --legacy-watch index.js"
+    "dev": "nodemon serverData.js",
+    "devauth": "nodemon serverAuth.js"
   },
   "keywords": [],
   "author": "",
