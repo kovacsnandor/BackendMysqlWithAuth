@@ -373,7 +373,6 @@ app.get("/trips", (req, res) => {
       res.send({ error: `Not found id: ${id}` });
       return;
     }
-
     res.send(results);
   });
 });
