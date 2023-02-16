@@ -293,9 +293,16 @@ app.get("/trips", (req, res) => {
   let sql = `
     SELECT id, numberOfMinits, DATE_FORMAT(date, '%Y.%m.%d %h:%i:%s') date, carId from trips`;
 
-  pool.query(sql, function (error, results, fields) {
-    sendingGet(res, error, results);
-  });
+  pool.getConnection(function(error, connection){
+    if (error) {
+      sendingGetError(res, "Server connecting error!")
+      return;
+    }
+    connection.query(sql, function (error, results, fields) {
+      sendingGet(res, error, results);
+    });
+    connection.release();
+  })  
 });
 
 app.post("/trips", (req, res) => {

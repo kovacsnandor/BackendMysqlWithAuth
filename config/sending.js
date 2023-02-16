@@ -11,6 +11,7 @@ class Response {
 // rekordok lekérdezése
 function sendingGet(res, error, results) {
   if (error) {
+    console.log(error);
     const response = new Response(0, "sql error", []);
     res.send(response);
     return;
