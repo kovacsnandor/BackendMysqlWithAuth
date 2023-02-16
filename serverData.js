@@ -6,32 +6,36 @@ const mysql = require("mysql");
 const sanitizeHtml = require("sanitize-html");
 const pool = require("./config/database.js");
 const { genSaltSync, hashSync, compareSync } = require("bcrypt");
-const cors = require('cors');
-const {checkToken} = require("./config/checkToken.js");
-
+const cors = require("cors");
+const { checkToken } = require("./config/checkToken.js");
+const {
+  sendingGet,
+  sendingGetError,
+  sendingGetById,
+  sendingPost,
+  sendingPut,
+  sendingDelete,
+} = require("./config/sending.js");
 
 //#region Middleware
 //json-al kommunikáljon
 app.use(express.json());
 // mindenkivel enged kommunikálni
-app.use(cors({
-    origin: '*', //http://localhost:8080
-    methods: "GET,HEAD,PUT,PATCH,POST,DELETE"
-}));
+app.use(
+  cors({
+    origin: "*", //http://localhost:8080
+    methods: "GET,HEAD,PUT,PATCH,POST,DELETE",
+  })
+);
 //autentikáció
 app.use(checkToken);
 //#endregion Middleware
-
 
 //#region Users ---
 app.get("/users", (req, res) => {
   let sql = `SELECT * FROM users`;
   pool.query(sql, async function (error, results, fields) {
-    if (error) {
-      console.log(error);
-      return;
-    }
-    res.send(results);
+    sendingGet(res, error, results);
   });
 });
 
@@ -41,16 +45,7 @@ app.get("/users/:id", (req, res) => {
     SELECT * FROM users
     WHERE id = ?`;
   pool.query(sql, [id], async function (error, results, fields) {
-    if (error) {
-      console.log(error);
-      res.send({ error: `sql error` });
-      return;
-    }
-    if (results.length == 0) {
-      res.send({ error: `Not found id: ${id}` });
-      return;
-    }
-    res.send(results[0]);
+    sendingGetById(res, error, results, id);
   });
 });
 
@@ -83,38 +78,29 @@ app.post("/users", (req, res) => {
       newR.number,
     ],
     function (error, result, fields) {
-      if (error) {
-        res.send({ error: `sql error` });
-        return;
-      }
-      if (!result.affectedRows) {
-        res.send({ error: `Insert falied` });
-        return;
-      }
-      newR.id = result.insertId;
-      res.send(newR);
+      // if (error) {
+      //   res.send({ error: `sql error` });
+      //   return;
+      // }
+      // if (!result.affectedRows) {
+      //   res.send({ error: `Insert falied` });
+      //   return;
+      // }
+      // newR.id = result.insertId;
+      // res.send(newR);
+      sendingPost(res, error, result, newR);
     }
   );
 });
 
 app.delete("/users/:id", (req, res) => {
   const id = req.params.id;
-
   let sql = `
     DELETE FROM users
     WHERE id = ?`;
 
   pool.query(sql, [id], function (error, result, fields) {
-    if (error) {
-      res.send({ error: `sql error` });
-      return;
-    }
-    if (!result.affectedRows) {
-      res.send({ error: `Not found id: ${id}` });
-      return;
-    }
-
-    res.send({ id: id });
+    sendingDelete(res, error, result, id);
   });
 });
 
@@ -154,19 +140,10 @@ app.put("/users/:id", (req, res) => {
       newR.email,
       newR.password,
       newR.number,
-      id
+      id,
     ],
     function (error, result, fields) {
-      if (error) {
-        res.send({ error: `sql error` });
-        return;
-      }
-      if (!result.affectedRows) {
-        res.send({ error: `Insert falied` });
-        return;
-      }
-      newR.id = id;
-      res.send(newR);
+      sendingPut(res, error, result, id, newR);
     }
   );
 });
@@ -175,18 +152,18 @@ app.put("/users/:id", (req, res) => {
 
 //#region cars ---
 //A függvény egy promisszal tér vissza
-function getTrips(carId) {
-  return new Promise((res, rej) => {
+function getTrips(res, carId) {
+  return new Promise((resolve, reject) => {
     let sql = `
     SELECT id, numberOfMinits, DATE_FORMAT(date, '%Y.%m.%d %h:%i:%s') date, carId from trips
     WHERE carId = ?`;
     pool.query(sql, [carId], async function (error, results, fields) {
       if (error) {
-        console.log(error);
-        return { error: "error" };
+        const message = "Trips sql error";
+        sendingGetError(res, message);
       }
       //Az await miatt a car.trips a results-ot kapja értékül
-      res(results);
+      resolve(results);
     });
   });
 }
@@ -195,39 +172,40 @@ app.get("/cars", (req, res) => {
   let sql = `SELECT * FROM cars`;
   pool.query(sql, async function (error, results, fields) {
     if (error) {
-      console.log(error);
+      message = "Cars sql error";
+      sendingGetError(res, message);
       return;
     }
 
     //Végigmegyünk a kocsikon, és berakjuk a trips-eket
     for (const car of results) {
       //A promise a results-ot ada vissza
-      car.trips = await getTrips(car.id);
+      car.trips = await getTrips(res, car.id);
     }
 
-    res.send(results);
+    sendingGet(res, null, results);
   });
 });
 
 app.get("/cars/:id", (req, res) => {
   const id = req.params.id;
-
   let sql = `
     SELECT * FROM cars
     WHERE id = ?`;
 
   pool.query(sql, [id], async function (error, results, fields) {
     if (error) {
-      console.log(error);
-      res.send({ error: `sql error` });
+      const message = "Cars sql error";
+      sendingGetError(res, message);
       return;
     }
     if (results.length == 0) {
-      res.send({ error: `Not found id: ${id}` });
+      const message = `Not found id: ${id}`;
+      sendingGetError(res, message);
       return;
     }
-    results[0].trips = await getTrips(id);
-    res.send(results[0]);
+    results[0].trips = await getTrips(res, id);
+    sendingGetById(res, null, results[0], id)
   });
 });
 
@@ -239,21 +217,12 @@ app.delete("/cars/:id", (req, res) => {
     WHERE id = ?`;
 
   pool.query(sql, [id], function (error, result, fields) {
-    if (error) {
-      res.send({ error: `sql error` });
-      return;
-    }
-    if (!result.affectedRows) {
-      res.send({ error: `Not found id: ${id}` });
-      return;
-    }
-
-    res.send({ id: id });
+    sendingDelete(res, error, result, id);
   });
 });
 
 app.post("/cars", (req, res) => {
-  const newCar = {
+  const newR = {
     name: sanitizeHtml(req.body.name),
     licenceNumber: sanitizeHtml(req.body.licenceNumber),
     hourlyRate: +sanitizeHtml(req.body.hourlyRate),
@@ -266,25 +235,16 @@ app.post("/cars", (req, res) => {
     `;
   pool.query(
     sql,
-    [newCar.name, newCar.licenceNumber, newCar.hourlyRate],
+    [newR.name, newR.licenceNumber, newR.hourlyRate],
     function (error, result, fields) {
-      if (error) {
-        res.send({ error: `sql error` });
-        return;
-      }
-      if (!result.affectedRows) {
-        res.send({ error: `Insert falied` });
-        return;
-      }
-      newCar.id = result.insertId;
-      res.send(newCar);
+      sendingPost(res, error, result, newR);
     }
   );
 });
 
 app.put("/cars/:id", (req, res) => {
   const id = req.params.id;
-  const updatedCar = {
+  const newR = {
     name: sanitizeHtml(req.body.name),
     licenceNumber: sanitizeHtml(req.body.licenceNumber),
     hourlyRate: +sanitizeHtml(req.body.hourlyRate),
@@ -298,18 +258,9 @@ app.put("/cars/:id", (req, res) => {
       `;
   pool.query(
     sql,
-    [updatedCar.name, updatedCar.licenceNumber, updatedCar.hourlyRate, id],
+    [newR.name, newR.licenceNumber, newR.hourlyRate, id],
     function (error, result, fields) {
-      if (error) {
-        res.send({ error: `sql error` });
-        return;
-      }
-      if (!result.affectedRows) {
-        res.send({ error: `Insert falied` });
-        return;
-      }
-      updatedCar.id = id;
-      res.send(updatedCar);
+      sendingPut(res, error, result, id, newR);
     }
   );
 });
@@ -323,17 +274,7 @@ app.get("/tripsByCarId/:id", (req, res) => {
     WHERE carId = ?`;
 
   pool.query(sql, [id], function (error, results, fields) {
-    if (error) {
-      console.log(error);
-      res.send({ error: `sql error` });
-      return;
-    }
-    if (results.length == 0) {
-      res.send({ error: `Not found id: ${id}` });
-      return;
-    }
-
-    res.send(results);
+    sendingGetById(res, error, results, id);
   });
 });
 
@@ -344,41 +285,21 @@ app.get("/trips/:id", (req, res) => {
     WHERE id = ?`;
 
   pool.query(sql, [id], function (error, results, fields) {
-    if (error) {
-      console.log(error);
-      res.send({ error: `sql error` });
-      return;
-    }
-    if (results.length == 0) {
-      res.send({ error: `Not found id: ${id}` });
-      return;
-    }
-
-    res.send(results);
+    sendingGetById(res, error, results, id);
   });
 });
 
 app.get("/trips", (req, res) => {
-  const id = req.params.id;
   let sql = `
     SELECT id, numberOfMinits, DATE_FORMAT(date, '%Y.%m.%d %h:%i:%s') date, carId from trips`;
 
   pool.query(sql, function (error, results, fields) {
-    if (error) {
-      console.log(error);
-      res.send({ error: `sql error` });
-      return;
-    }
-    if (results.length == 0) {
-      res.send({ error: `Not found id: ${id}` });
-      return;
-    }
-    res.send(results);
+    sendingGet(res, error, results);
   });
 });
 
 app.post("/trips", (req, res) => {
-  const newTrip = {
+  const newR = {
     numberOfMinits: sanitizeHtml(req.body.numberOfMinits),
     date: sanitizeHtml(req.body.date),
     carId: +sanitizeHtml(req.body.carId),
@@ -391,25 +312,16 @@ app.post("/trips", (req, res) => {
     `;
   pool.query(
     sql,
-    [newTrip.numberOfMinits, newTrip.date, newTrip.carId],
+    [newR.numberOfMinits, newR.date, newR.carId],
     function (error, result, fields) {
-      if (error) {
-        res.send({ error: `sql error` });
-        return;
-      }
-      if (!result.affectedRows) {
-        res.send({ error: `Insert falied` });
-        return;
-      }
-      newTrip.id = result.insertId;
-      res.send(newTrip);
+      sendingPost(res, error, result, newR);
     }
   );
 });
 
 app.put("/trips/:id", (req, res) => {
   const id = req.params.id;
-  const newTrip = {
+  const newR = {
     numberOfMinits: sanitizeHtml(req.body.numberOfMinits),
     date: sanitizeHtml(req.body.date),
     carId: +sanitizeHtml(req.body.carId),
@@ -423,18 +335,9 @@ app.put("/trips/:id", (req, res) => {
       `;
   pool.query(
     sql,
-    [newTrip.numberOfMinits, newTrip.date, newTrip.carId, id],
+    [newR.numberOfMinits, newR.date, newR.carId, id],
     function (error, result, fields) {
-      if (error) {
-        res.send({ error: `sql error` });
-        return;
-      }
-      if (!result.affectedRows) {
-        res.send({ error: `Update falied` });
-        return;
-      }
-      newTrip.id = id;
-      res.send(newTrip);
+      sendingPut(res, error, result, id, newR);
     }
   );
 });

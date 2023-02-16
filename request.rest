@@ -25,31 +25,31 @@ post http://localhost:3000/users
 Content-Type: application/json
 
 {
-    "firstName": "Béla",
+    "firstName": "Géza",
     "lastName": "Fehér",
     "gender": "férfi",
-    "userName": "bela",
-    "email": "feher.bela@gmail.com",
+    "userName": "geza",
+    "email": "feher.geza@gmail.com",
     "password": "jozsi123",
     "number": 33333333
 }
 
 ### User módosítása
-put http://localhost:3000/users/2
+put http://localhost:3000/users/3
 Content-Type: application/json
 
 {
-    "firstName": "Józsi",
+    "firstName": "Áron",
     "lastName": "Balog",
     "gender": "férfi",
-    "userName": "jozsika",
-    "email": "balog.jozsi@gmail.com",
+    "userName": "aron",
+    "email": "balog.aron@gmail.com",
     "password": "test123",
     "number": 123456
 }
 
 ### Delete user
-delete http://localhost:3000/users/1
+delete http://localhost:3000/users/10
 ### #endregion users
 
 ### ---------------------------------------
@@ -57,7 +57,7 @@ delete http://localhost:3000/users/1
 get http://localhost:3000/cars
 
 ### get car by id
-get http://localhost:3000/cars/602
+get http://localhost:3000/cars/2
 
 ### sql injections
 ### get adabázis
@@ -74,7 +74,7 @@ get http://localhost:3000/cars/1 union select column_name, '', '', data_type fro
 get http://localhost:3000/cars/1 union select email, password, '','' from users
 
 ### delte car by id
-delete http://localhost:3000/cars/1
+delete http://localhost:3000/cars/2
 
 ### post car
 post http://localhost:3000/cars
@@ -97,11 +97,11 @@ Content-Type: application/json
 }
 
 ### put car by id
-put http://localhost:3000/cars/4
+put http://localhost:3000/cars/604
 Content-Type: application/json
 
 {
-    "name": "Mercedes2",
+    "name": "Mercedes3",
     "licenceNumber": "MM-222",
     "hourlyRate": 2600
 }
@@ -120,7 +120,7 @@ Content-Type: application/json
 get http://localhost:3000/tripsByCarId/1
 
 ### get trips by id
-get http://localhost:3000/trips/56
+get http://localhost:3000/trips/2984
 
 ### get trips
 get http://localhost:3000/trips
@@ -137,7 +137,7 @@ Content-Type: application/json
 
 
 ### put trip by id
-put http://localhost:3000/trips/56
+put http://localhost:3000/trips/2984
 Content-Type: application/json
 
 {
