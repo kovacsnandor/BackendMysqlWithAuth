@@ -150,3 +150,9 @@ INSERT trips
   (numberOfMinits, date, carId)
   VALUES
   (25, '2022.10.13 12:20:00', 1);
+
+
+
+# lekérdezések
+select * from cars c
+  inner join trips t on c.id = t.carId;

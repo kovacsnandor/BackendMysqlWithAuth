@@ -3,21 +3,28 @@ post http://localhost:4000/login
 Content-Type: application/json
 
 {
-    "userName": "jozsika",
-    "password": "test123"
+    "userName": "feri",
+    "password": "jozsi123"
 }
 
+### token kérés
+post http://localhost:4000/token
+Content-Type: application/json
+
+{
+    "token": "eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJuYW1lIjoiZmVyaSIsImlhdCI6MTY3NjYyODA0OX0.8Pja_ZzkE9bJAk5PH6rjfoqNyVK8-gMNZcK7J3CiqM0"
+}
 
 ### logout
 delete http://localhost:4000/logout
-Authorization: Bearer eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJuYW1lIjoiam96c2lrYSIsImlhdCI6MTY3NjIzMTgwN30.7HzUxCNDqfCE4l8i99cF3zseU3U7mSO8VixFJesq8Pg
+Authorization: Bearer eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJuYW1lIjoiZmVyaSIsImlhdCI6MTY3NjYyODA0OX0.8Pja_ZzkE9bJAk5PH6rjfoqNyVK8-gMNZcK7J3CiqM0
 
 ### Userek
 get http://localhost:3000/users
-Authorization: Bearer eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJuYW1lIjoiam96c2lrYSIsImlhdCI6MTY3NjIzMTgwNywiZXhwIjoxNjc2MjMyNzA3fQ.pmbnM9ujP5IT54Ap6xF2Mna-Uk73eLcPkFpzNw-6G-w
+Authorization: Bearer eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJuYW1lIjoiZmVyaSIsImlhdCI6MTY3NjYyODA0OSwiZXhwIjoxNjc2NjI4OTQ5fQ.F1QXW034dlIGXs7JiGg2sp2H2yclpJO3OlibBbd6KFs
 
 ### Egy user
-get http://localhost:3000/users/2
+get http://localhost:3000/users/15
 Authorization: Bearer eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJyZXN1bHQiOnsiaWQiOjEsImZpcnN0TmFtZSI6IkLDqWxhIiwibGFzdE5hbWUiOiJOYWd5b24iLCJnZW5kZXIiOiJmw6lyZmkiLCJlbWFpbCI6Im5hZ3kuYmVsYUBnbWFpbC5jb20iLCJudW1iZXIiOjM0MzQzNTUzNH0sImlhdCI6MTY0NDMxNTE5NCwiZXhwIjoxNjQ0MzE4Nzk0fQ.q2ih8UiVs51Pa3UEc908O6tLt5Upl9NOlidEmQSksMQ
 
 ### User hozzáadása
@@ -25,11 +32,11 @@ post http://localhost:3000/users
 Content-Type: application/json
 
 {
-    "firstName": "Géza",
+    "firstName": "h",
     "lastName": "Fehér",
     "gender": "férfi",
-    "userName": "geza",
-    "email": "feher.geza@gmail.com",
+    "userName": "h",
+    "email": "feher.h@gmail.com",
     "password": "jozsi123",
     "number": 33333333
 }
@@ -49,7 +56,7 @@ Content-Type: application/json
 }
 
 ### Delete user
-delete http://localhost:3000/users/10
+delete http://localhost:3000/users/17
 ### #endregion users
 
 ### ---------------------------------------

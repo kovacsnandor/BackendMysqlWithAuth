@@ -170,6 +170,7 @@ function getTrips(res, carId) {
 
 app.get("/cars", (req, res) => {
   let sql = `SELECT * FROM cars`;
+
   pool.query(sql, async function (error, results, fields) {
     if (error) {
       message = "Cars sql error";
@@ -205,7 +206,7 @@ app.get("/cars/:id", (req, res) => {
       return;
     }
     results[0].trips = await getTrips(res, id);
-    sendingGetById(res, null, results[0], id)
+    sendingGetById(res, null, results[0], id);
   });
 });
 
@@ -293,17 +294,20 @@ app.get("/trips", (req, res) => {
   let sql = `
     SELECT id, numberOfMinits, DATE_FORMAT(date, '%Y.%m.%d %h:%i:%s') date, carId from trips`;
 
-  pool.getConnection(function(error, connection){
+  pool.getConnection(function (error, connection) {
     if (error) {
-      sendingGetError(res, "Server connecting error!")
+      sendingGetError(res, "Server connecting error!");
       return;
     }
+
     connection.query(sql, function (error, results, fields) {
       sendingGet(res, error, results);
     });
+
     connection.release();
-  })  
+  });
 });
+
 
 app.post("/trips", (req, res) => {
   const newR = {
@@ -340,13 +344,20 @@ app.put("/trips/:id", (req, res) => {
     carId = ?
     WHERE id = ?
       `;
-  pool.query(
-    sql,
-    [newR.numberOfMinits, newR.date, newR.carId, id],
-    function (error, result, fields) {
-      sendingPut(res, error, result, id, newR);
+
+  pool.getConnection(function (error, connection) {
+    if (error) {
+      sendingGetError(res, "Server connecting error!");
+      return;
     }
-  );
+    connection.query(
+      sql,
+      [newR.numberOfMinits, newR.date, newR.carId, id],
+      function (error, result, fields) {
+        sendingPut(res, error, result, id, newR);
+      });
+    connection.release();
+  });
 });
 //#endregion trips
 
