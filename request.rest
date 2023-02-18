@@ -12,7 +12,7 @@ post http://localhost:4000/token
 Content-Type: application/json
 
 {
-    "token": "eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJuYW1lIjoiZmVyaSIsImlhdCI6MTY3Njc1NDYwNn0.fupM6VH0pOQ7x8YDUbOJCRubSmkcZCt4DYgzYctZMtQ"
+    "token": "eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJuYW1lIjoiZmVyaSIsImlhdCI6MTY3Njc1Nzg5N30.HcxLe7gKFag5Tjk8lwN-4eOo3CAGBazffU8xKLTTSW8"
 }
 
 ### logout
@@ -22,6 +22,10 @@ Content-Type: application/json
 {
     "token": "eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJuYW1lIjoiZmVyaSIsImlhdCI6MTY3Njc1NTI0M30.aS6yK0l548OjCU3irhz95vTLN2TuA9i4NFJsgXPBXqg"
 }
+
+### logout all
+delete http://localhost:4000/logoutall
+Content-Type: application/json
 
 
 ### Userek

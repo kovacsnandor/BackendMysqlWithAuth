@@ -6,6 +6,11 @@ const jwt = require("jsonwebtoken");
 const pool = require("./config/database.js");
 const { genSaltSync, hashSync, compareSync } = require("bcrypt");
 
+const {
+  sendingInfo
+} = require("./config/sending.js");
+
+
 app.use(express.json());
 //itt tároljuk a refrest tokeneket
 refreshTokens = [];
@@ -43,24 +48,15 @@ app.post("/login", (req, res) => {
       refreshTokens.push(refreshToken);
 
       //mindkét tokent odaadjuk a bejelentkezőnek
-      res.json({
-        success: 1,
-        message: "login successfully",
-        accessToken: accessToken,
-        refreshToken: refreshToken,
-      });
+      sendingInfo(res, 1, "login successfully", { accessToken: accessToken, refreshToken: refreshToken }, 200);
+
       console.log("accessToken /login:", accessToken);
       console.log("refreshToken /login:", refreshToken);
       console.log("refreshTokens /login:", refreshTokens);
       return;
     } else {
-      //hibás jelszó
-      return res.json({
-        success: 0,
-        message: "Invalid username or password",
-        accessToken: "",
-        refreshToken: "",
-      });
+      sendingInfo(res, 1, "Invalid username or password", { accessToken: "", refreshToken: "" }, 200);
+      return;
     }
   });
 });
@@ -80,35 +76,47 @@ app.post("/token", (req, res) => {
   let refreshToken = req.body.token;
   // nem küldtünk tokent
   if (refreshToken == null) {
-    return res.sendStatus(401);
+    sendingInfo(res, 0, "No sends token", [], 401);
+    return
   }
   //Ha a küldött refresh token nincs benne a refreshTokens tömbben
   if (!refreshTokens.includes(refreshToken)) {
-    return res.sendStatus(403);
+    sendingInfo(res, 0, "Unknown Refresh Token", [], 403);
+    return;
   }
 
   //ellnőrizzük, hogy szabályos-e a token, és ha igen, megkapjuk a user-t
   jwt.verify(refreshToken, process.env.REFRESH_TOKEN_SECRET, (error, user) => {
     if (error) {
-      return res.sendStatus(403);
+      sendingInfo(res, 0, "Invalid Token", [], 403);
+    return;
     }
     let accessToken = generateAccessToken({ name: user.name });
 
     //mindkét tokent odaadjuk a token kérőnek
     //egyelőre a refresh token marad
-    res.json({ accessToken: accessToken });
+    sendingInfo(res, 1, "accesToken sent", { accessToken: accessToken }, 200);
   });
 
   console.log("refreshTokens /token:", refreshTokens);
 });
 
+//Kijelentkezés a refresh tokennel
 app.delete("/logout", (req, res) => {
   //eltüntetjük a refreshTokes-ből a küldött refreshToken-t
-  console.log("xx", req.body.token);
   refreshTokens = refreshTokens.filter((token) => token !== req.body.token);
-  res.sendStatus(402);
+  sendingInfo(res, 1, "Logout ok!", [], 402)
   console.log("refreshTokens /logout:", refreshTokens);
 });
+
+//Mindenkit kijelentkeztet (fejlesztési eszköz)
+app.delete("/logoutall", (req, res) => {
+  //eltüntetjük a refreshTokes-ből a küldött refreshToken-t
+  refreshTokens = [];
+  sendingInfo(res, 1, "Logout ok!", [], 402)
+  console.log("refreshTokens /logout:", refreshTokens);
+});
+
 
 //Normál token generátor időkorláttal, ha nincs időkorlát, korlátlant ad
 function generateAccessToken(user) {

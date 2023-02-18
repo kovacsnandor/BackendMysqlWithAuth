@@ -94,6 +94,14 @@ function sendingDelete(res, error, result, id) {
   res.send(response);
 }
 
+function sendingInfo(res, success, message, data, status){
+  if (status) {
+    res.status(status);
+  }
+  const response = new Response(success, message, data);
+  res.send(response);
+}
+
 module.exports = {
   sendingGet,
   sendingGetError,
@@ -101,5 +109,6 @@ module.exports = {
   sendingPost,
   sendingPut,
   sendingDelete,
+  sendingInfo
 };
 
