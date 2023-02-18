@@ -12,16 +12,21 @@ post http://localhost:4000/token
 Content-Type: application/json
 
 {
-    "token": "eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJuYW1lIjoiZmVyaSIsImlhdCI6MTY3NjYyODA0OX0.8Pja_ZzkE9bJAk5PH6rjfoqNyVK8-gMNZcK7J3CiqM0"
+    "token": "eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJuYW1lIjoiZmVyaSIsImlhdCI6MTY3Njc1NDYwNn0.fupM6VH0pOQ7x8YDUbOJCRubSmkcZCt4DYgzYctZMtQ"
 }
 
 ### logout
 delete http://localhost:4000/logout
-Authorization: Bearer eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJuYW1lIjoiZmVyaSIsImlhdCI6MTY3NjYyODA0OX0.8Pja_ZzkE9bJAk5PH6rjfoqNyVK8-gMNZcK7J3CiqM0
+Content-Type: application/json
+
+{
+    "token": "eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJuYW1lIjoiZmVyaSIsImlhdCI6MTY3Njc1NTI0M30.aS6yK0l548OjCU3irhz95vTLN2TuA9i4NFJsgXPBXqg"
+}
+
 
 ### Userek
 get http://localhost:3000/users
-Authorization: Bearer eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJuYW1lIjoiZmVyaSIsImlhdCI6MTY3NjYyODA0OSwiZXhwIjoxNjc2NjI4OTQ5fQ.F1QXW034dlIGXs7JiGg2sp2H2yclpJO3OlibBbd6KFs
+Authorization: Bearer eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJuYW1lIjoiZmVyaSIsImlhdCI6MTY3Njc1NDcwOCwiZXhwIjoxNjc2NzU1NjA4fQ.KYhG-su5z7jQJJzq9MYJr2J3lBnnPw6oZIjWRT4X6cs
 
 ### Egy user
 get http://localhost:3000/users/15

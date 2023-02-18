@@ -104,6 +104,7 @@ app.post("/token", (req, res) => {
 
 app.delete("/logout", (req, res) => {
   //eltüntetjük a refreshTokes-ből a küldött refreshToken-t
+  console.log("xx", req.body.token);
   refreshTokens = refreshTokens.filter((token) => token !== req.body.token);
   res.sendStatus(402);
   console.log("refreshTokens /logout:", refreshTokens);
