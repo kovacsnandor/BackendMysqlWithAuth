@@ -239,7 +239,29 @@ function getTrips(res, carId) {
   });
 }
 
+//Csak a cars tábla
 app.get("/cars", (req, res) => {
+  let sql = `SELECT * FROM cars`;
+
+  pool.getConnection(function (error, connection) {
+    if (error) {
+      sendingGetError(res, "Server connecting error!");
+      return;
+    }
+    connection.query(sql, async function (error, results, fields) {
+      if (error) {
+        message = "Cars sql error";
+        sendingGetError(res, message);
+        return;
+      }
+      sendingGet(res, null, results);
+    });
+    connection.release();
+  });
+});
+
+//Cars a Trip-jeivel
+app.get("/carsWithTrips", (req, res) => {
   let sql = `SELECT * FROM cars`;
 
   pool.getConnection(function (error, connection) {
@@ -265,7 +287,59 @@ app.get("/cars", (req, res) => {
   });
 });
 
+//Cars és Trips táblák inner join
+app.get("/carsTrips", (req, res) => {
+  let sql = `select * from cars c
+  inner join trips t on c.id = t.carId`;
+
+  pool.getConnection(function (error, connection) {
+    if (error) {
+      sendingGetError(res, "Server connecting error!");
+      return;
+    }
+    connection.query(sql, async function (error, results, fields) {
+      if (error) {
+        message = "Cars sql error";
+        sendingGetError(res, message);
+        return;
+      }
+      sendingGet(res, null, results);
+    });
+    connection.release();
+  });
+});
+
+//Egy cars rekord
 app.get("/cars/:id", (req, res) => {
+  const id = req.params.id;
+  let sql = `
+    SELECT * FROM cars
+    WHERE id = ?`;
+
+  pool.getConnection(function (error, connection) {
+    if (error) {
+      sendingGetError(res, "Server connecting error!");
+      return;
+    }
+    connection.query(sql, [id], async function (error, results, fields) {
+      if (error) {
+        const message = "Cars sql error";
+        sendingGetError(res, message);
+        return;
+      }
+      if (results.length == 0) {
+        const message = `Not found id: ${id}`;
+        sendingGetError(res, message);
+        return;
+      }
+      sendingGetById(res, null, results[0], id);
+    });
+    connection.release();
+  });
+});
+
+//egy cars rekord a tripsjeivel
+app.get("/carsWithTrips/:id", (req, res) => {
   const id = req.params.id;
   let sql = `
     SELECT * FROM cars
@@ -289,6 +363,36 @@ app.get("/cars/:id", (req, res) => {
       }
       results[0].trips = await getTrips(res, id);
       sendingGetById(res, null, results[0], id);
+    });
+    connection.release();
+  });
+});
+
+//egy cars rekord a tripsjeivel
+app.get("/carsTrips/:id", (req, res) => {
+  const id = req.params.id;
+  let sql = `
+  select c.id, c.name, c.licenceNumber, c.hourlyRate, t.id, t.numberOfMinits, t.date, t.carId from cars c
+  inner join trips t on c.id = t.carId
+  where c.id = ?`;
+
+  pool.getConnection(function (error, connection) {
+    if (error) {
+      sendingGetError(res, "Server connecting error!");
+      return;
+    }
+    connection.query(sql, [id], async function (error, results, fields) {
+      if (error) {
+        const message = "Cars sql error";
+        sendingGetError(res, message);
+        return;
+      }
+      if (results.length == 0) {
+        const message = `Not found id: ${id}`;
+        sendingGetError(res, message);
+        return;
+      }
+      sendingGetById(res, null, results, id);
     });
     connection.release();
   });

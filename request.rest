@@ -72,8 +72,21 @@ delete http://localhost:3000/users/17
 ### get cars
 get http://localhost:3000/cars
 
-### get car by id
-get http://localhost:3000/cars/2
+### get cars with Trips (nosql)
+get http://localhost:3000/carsWithTrips
+
+### get carsTrips (inner join)
+get http://localhost:3000/carsTrips
+
+### get car by id (csak a car tábla)
+get http://localhost:3000/cars/6
+
+### get car by id (csak a car tábla)
+get http://localhost:3000/carsWithTrips/6
+
+### get car és trips innercoin
+get http://localhost:3000/carsTrips/2
+
 
 ### sql injections
 ### get adabázis

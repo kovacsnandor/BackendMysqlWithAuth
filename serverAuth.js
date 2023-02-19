@@ -61,6 +61,8 @@ app.post("/login", (req, res) => {
   });
 });
 
+
+
 function getUserByUserEmail(userName, callBack) {
   let queryString = `select * from users where userName = ?`;
   let params = [userName];
@@ -114,7 +116,7 @@ app.delete("/logoutall", (req, res) => {
   //eltüntetjük a refreshTokes-ből a küldött refreshToken-t
   refreshTokens = [];
   sendingInfo(res, 1, "Logout ok!", [], 402)
-  console.log("refreshTokens /logout:", refreshTokens);
+  console.log("refreshTokens /logoutall:", refreshTokens);
 });
 
 

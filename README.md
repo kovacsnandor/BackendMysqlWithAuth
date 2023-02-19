@@ -591,6 +591,26 @@ Megvalósítás:
 
 ```
 
+### Logout all
+A server a user-nek elküldött `refreshToken` segítségével tudja kijelentkeztetni az összes felhasználót a `delete ... /logoutall` rout-on.
+- Innentől kezdve lehetetlenné válik refreshTokennel accessTokent kérni.
+- Következmény: innentől mindenkinek újra be kell jelentkezni, nem lehet használni a refreshTokent
+- Ennek szerviz céljai vannak, hogy ki lehessen üríteni a refreshTokens tömböt.
+- Ezt élesben le kell tiltani.
+
+Megvalósítás: 
+```js
+//Mindenkit kijelentkeztet (fejlesztési eszköz)
+app.delete("/logoutall", (req, res) => {
+  //eltüntetjük a refreshTokes-ből a küldött refreshToken-t
+  refreshTokens = [];
+  sendingInfo(res, 1, "Logout ok!", [], 402)
+  console.log("refreshTokens /logoutall:", refreshTokens);
+});
+```
+
+
+
 # Egyéb
 ## success kódok
 success: 
