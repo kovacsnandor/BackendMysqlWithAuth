@@ -22,11 +22,10 @@ function sendingGet(res, error, results) {
 
 //rekordok lekérdezése csak hiba
 function sendingGetError(res, message) {
-      const response = new Response(0, message, []);
-      res.send(response);
-      return;
-  }
-  
+  const response = new Response(0, message, []);
+  res.send(response);
+  return;
+}
 
 //egy rekord lekérdezése id alapján
 function sendingGetById(res, error, results, id) {
@@ -94,7 +93,7 @@ function sendingDelete(res, error, result, id) {
   res.send(response);
 }
 
-function sendingInfo(res, success, message, data, status){
+function sendingInfo(res, success, message, data, status) {
   if (status) {
     res.status(status);
   }
@@ -109,6 +108,5 @@ module.exports = {
   sendingPost,
   sendingPut,
   sendingDelete,
-  sendingInfo
+  sendingInfo,
 };
-

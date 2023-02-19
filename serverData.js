@@ -15,8 +15,8 @@ const {
   sendingPost,
   sendingPut,
   sendingDelete,
+  sendingInfo,
 } = require("./config/sending.js");
-
 
 //#region Middleware
 //json-al kommunikáljon
@@ -66,6 +66,7 @@ app.get("/users/:id", (req, res) => {
   });
 });
 
+//user létrehozás
 app.post("/users", (req, res) => {
   const salt = genSaltSync(10);
   req.body.password = hashSync(req.body.password, salt);
@@ -75,14 +76,14 @@ app.post("/users", (req, res) => {
     gender: mySanitizeHtml(req.body.gender),
     userName: mySanitizeHtml(req.body.userName),
     email: mySanitizeHtml(req.body.email),
-    password: mySanitizeHtml(req.body.password),
+    password: req.body.password,
     number: +mySanitizeHtml(req.body.number),
   };
-  let sql = `insert into users
-      (firstName, lastName, gender, userName, email, password, number)
-      values
-      (?,?,?,?,?,?,?)
-    `;
+
+  //user ellenőrzés
+  let sql = `select count(*) countUserEmail from users where userName = ?
+    UNION all
+    select count(*) countEmail from users where email = ?`;
   pool.getConnection(function (error, connection) {
     if (error) {
       sendingGetError(res, "Server connecting error!");
@@ -90,17 +91,50 @@ app.post("/users", (req, res) => {
     }
     connection.query(
       sql,
-      [
-        newR.firstName,
-        newR.lastName,
-        newR.gender,
-        newR.userName,
-        newR.email,
-        newR.password,
-        newR.number,
-      ],
+      [newR.userName, newR.email],
       function (error, result, fields) {
-        sendingPost(res, error, result, newR);
+        if (error) {
+          sendingInfo(res, 0, "server error", [], 200);
+          return;
+        }
+        if (result[0].countUserEmail >= 1 && result[1].countUserEmail >= 1) {
+          sendingInfo(
+            res,
+            -3,
+            "Username and password are already taken",
+            newR,
+            200
+          );
+          return;
+        } else if (result[0].countUserEmail >= 1) {
+          sendingInfo(res, -2, "Username are already taken", newR, 200);
+          return;
+        } else if (result[1].countUserEmail >= 1) {
+          sendingInfo(res, -1, "Email are already taken", newR, 200);
+          return;
+        }
+        //mehet a regisztráció
+
+        sql = `insert into users
+      (firstName, lastName, gender, userName, email, password, number)
+      values
+      (?,?,?,?,?,?,?)
+    `;
+        connection.query(
+          sql,
+          [
+            newR.firstName,
+            newR.lastName,
+            newR.gender,
+            newR.userName,
+            newR.email,
+            newR.password,
+            newR.number,
+          ],
+          function (error, result, fields) {
+            sendingPost(res, error, result, newR);
+          }
+        );
       }
     );
     connection.release();
@@ -464,7 +498,11 @@ function mySanitizeHtml(data) {
 }
 
 app.listen(process.env.APP_PORT, () => {
-  console.log(`Data server, listen port: ${process.env.APP_PORT} (Auth: ${process.env.AUTH_ON == 1 ? "on": "off"})`);
+  console.log(
+    `Data server, listen port: ${process.env.APP_PORT} (Auth: ${
+      process.env.AUTH_ON == 1 ? "on" : "off"
+    })`
+  );
 });
 
 module.exports = { genSaltSync, hashSync, compareSync };

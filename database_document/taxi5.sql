@@ -156,3 +156,8 @@ INSERT trips
 # lekérdezések
 select * from cars c
   inner join trips t on c.id = t.carId;
+
+select count(*) countUserEmail from users where userName = 'h'
+UNION all
+  select count(*) countEmail from users where email = 'feher.h@gmail.com'
+;

@@ -591,5 +591,22 @@ Megvalósítás:
 
 ```
 
+# Egyéb
+## success kódok
+success: 
+  - 1: minden ok
+  - 0: lekérdezés hiba
+  - -3: Username and password are already taken (user név és email már létezik)
+  - -2: Username are already taken (Ez a user név már létezik)
+  - -1: Email are already taken (Ez az email név már létezik)
 
+## Kód kezelés
+Szegmonsek több szintű nyitása, csukása lehetővé teszik a kód átlátását.
+- Ctrl-k-n, ahol n = 1,2,3,4,5,6,stb.
+  - Fontos, hogy az a szegmens amiben állok, arra nincs hatással.
+  - Ctrl-k-1: bezárja a regionokat
+  - Ctrl-k-2: bezárja a regionokon belüli függvényeket
+  - Ctrl-k-3: bezárja a függvényen belüli kódblok első szintjét
+  - stb.
+- Ctrl-k-j: kinyit mindent
 
