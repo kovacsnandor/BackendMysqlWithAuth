@@ -2,7 +2,7 @@
 - branch: `01_Adatbázis_Létrehozás`
 
 ## MySQL idegen kulcs megkötések
-![adatbázis diagram](database_document/carsDiagram.jpg)
+![adatbázis diagram](database_document/Diagram2_taxi5.jpg)
 
 ## Teszt adatok
 ### Kézi generálás
