@@ -29,22 +29,29 @@
 - package.json telepítése: `npm init`
 
 ## Letöltendő modulok
+Globális: 
 - nodemon (ha még nincs letöltve): `npm i -g nodemon`
+Lokális:
 - [express](https://www.npmjs.com/package/express): `npm i express`
 - [mysql](https://www.npmjs.com/package/mysql): `mpm i mysql`
 - [sanitize-html](https://www.npmjs.com/package/sanitize-html): `npm i sanitize-html`
-- `npm i dotenv`
+- [dotenv](https://www.npmjs.com/package/dotenv): `npm i dotenv`
+- [bcrypt](https://www.npmjs.com/package/bcrypt): `npm i bcrypt`
+- [cors](https://www.npmjs.com/package/cors): `npm i cors`
+- [jsonwebtoken](https://www.npmjs.com/package/jsonwebtoken): `npm i jsonwebtoken`
+
 
 ## dev script megírása (package.json)
 ```json
 "scripts": {
-    "dev": "nodemon --legacy-watch index.js"
+    "dev": "nodemon serverData.js",
+    "devauth": "nodemon serverAuth.js"
   },
 ```
 
 ## Projekt indítása
-1. Belépés a server mappába: `cd server`
-2. Szerver indítása: `npm run dev`
+1. Data szerver indítása: `npm run dev`
+2. Auth szerver indítása: `npm run devauth`
 
 # Csatlakozás az adatbázishoz
 - branch: `03_Connect_Mysql`
